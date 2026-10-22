@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <!-- Configuración para que se vea perfecto en los celulares -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contabilidad Bendecida</title>
+    
+    <!-- Conexión con nuestro archivo de diseño -->
+    <link rel="stylesheet" href="style.css">
+
+    <!-- Configuración para Aplicación Instalable (PWA) -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#2E7D32">
+</head>
+<body>
+
+    <!-- ================= ENCABEZADO ================= -->
+    <header>
+        <h1>Contabilidad Bendecida</h1>
+        <!-- Aquí app.js inyectará el versículo diario -->
+        <div id="versiculo-diario-texto" class="versiculo-diario">
+            Buscando la sabiduría de la Palabra...
+        </div>
+    </header>
+
+    <!-- ================= CONTENIDO PRINCIPAL ================= -->
+    <main class="contenedor">
+        
+        <div class="dashboard-grid">
+            
+            <!-- 1. TARJETA DE GASTOS Y PRIMICIAS -->
+            <div class="tarjeta primicias">
+                <h3>Gastos Familiares y Primicias</h3>
+                <div class="form-grupo">
+                    <label>Monto (R$):</label>
+                    <input type="number" id="gasto-monto" placeholder="Ej: 150.00" step="0.01">
+                </div>
+                <div class="form-grupo">
+                    <label>Categoría:</label>
+                    <select id="gasto-cat">
+                        <option value="Primicias (Diezmos y Ofrendas)">Primicias (Diezmos y Ofrendas)</option>
+                        <option value="Comida">Comida (Supermercado, Panadería)</option>
+                        <option value="Vivienda">Vivienda (Alquiler, Mantenimiento)</option>
+                        <option value="Servicios">Servicios (Luz, Agua, Wifi)</option>
+                        <option value="Otros Gastos">Otros Gastos (Comida afuera, Extras)</option>
+                    </select>
+                </div>
+                <div class="form-grupo">
+                    <label>Descripción / Detalle:</label>
+                    <input type="text" id="gasto-desc" placeholder="Ej: Compra mensual">
+                </div>
+                <button onclick="enviarGasto()">Registrar Fielmente</button>
+            </div>
+
+            <!-- 2. TARJETA DEL VEHÍCULO -->
+            <div class="tarjeta">
+                <h3>Vehículo (Combustible)</h3>
+                <p style="font-size: 0.85rem; color: var(--texto-secundario); margin-bottom: 10px;">
+                    Control de mayordomía: Calcula tu costo por kilómetro.
+                </p>
+                <div class="form-grupo">
+                    <label>Costo del Combustible (R$):</label>
+                    <input type="number" id="vehiculo-monto" placeholder="Ej: 200.00">
+                </div>
+                <div class="form-grupo">
+                    <label>Kilómetros Rodados:</label>
+                    <input type="number" id="vehiculo-km" placeholder="Ej: 350">
+                </div>
+                <button onclick="enviarVehiculo()">Registrar Viaje</button>
+            </div>
+
+            <!-- 3. TARJETA LUNA FEM BRASIL -->
+            <div class="tarjeta negocio">
+                <h3>Luna Fem Brasil</h3>
+                <div class="form-grupo">
+                    <label>Monto (R$):</label>
+                    <input type="number" id="luna-monto" placeholder="Ej: 500.00">
+                </div>
+                <div class="form-grupo">
+                    <label>Tipo de Movimiento:</label>
+                    <select id="luna-tipo">
+                        <option value="ingreso">Ingreso por Ventas</option>
+                        <option value="mercaderia">Inversión en Mercadería</option>
+                        <option value="alquiler">Pago de Alquiler</option>
+                    </select>
+                </div>
+                <button onclick="enviarLunaFem()">Registrar Movimiento</button>
+            </div>
+
+            <!-- 4. TARJETA CLÍNICA NATALIA RIPOLL -->
+            <div class="tarjeta negocio">
+                <h3>Clínica Natalia Ripoll Estética</h3>
+                <div class="form-grupo">
+                    <label>Monto (R$):</label>
+                    <input type="number" id="clinica-monto" placeholder="Ej: 800.00">
+                </div>
+                <div class="form-grupo">
+                    <label>Tipo de Movimiento:</label>
+                    <select id="clinica-tipo">
+                        <option value="ingreso">Ingreso por Servicios</option>
+                        <option value="mercaderia">Inversión en Insumos</option>
+                    </select>
+                </div>
+                <button onclick="enviarClinica()">Registrar Movimiento</button>
+            </div>
+
+        </div> <!-- Fin de la grilla -->
+
+        <!-- 5. CONSEJERO BÍBLICO DE INTELIGENCIA ARTIFICIAL -->
+        <div class="tarjeta" style="border-top: 3px solid var(--dorado); text-align: center;">
+            <h3>Consejero Financiero Bíblico</h3>
+            <p style="font-size: 0.95rem; margin-bottom: 20px;">
+                Permite que la IA analice tus finanzas actuales a la luz de la Palabra, reconociendo que Jesús es el camino, la verdad y la vida.
+            </p>
+            <button class="btn-dorado" onclick="window.consultarConsejeroBiblico()">Buscar Sabiduría Financiera</button>
+            
+            <div id="respuesta-consejero" style="margin-top: 20px; padding: 15px; background: var(--verde-claro); border-radius: 8px; text-align: left; font-size: 0.95rem;">
+                <em>"Encomienda a Jehová tus obras, y tus pensamientos serán afirmados." (Proverbios 16:3)</em>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- ================= SCRIPTS ================= -->
+    
+    <!-- Este script lee lo que escribes en las cajas de texto y lo envía a la nube mediante app.js -->
+    <script>
+        function enviarGasto() {
+            const monto = document.getElementById('gasto-monto').value;
+            const cat = document.getElementById('gasto-cat').value;
+            const desc = document.getElementById('gasto-desc').value;
+            window.registrarGasto(monto, cat, desc);
+            
+            document.getElementById('gasto-monto').value = '';
+            document.getElementById('gasto-desc').value = '';
+        }
+
+        function enviarVehiculo() {
+            const monto = document.getElementById('vehiculo-monto').value;
+            const km = document.getElementById('vehiculo-km').value;
+            window.registrarCargaVehiculo(monto, km);
+            
+            document.getElementById('vehiculo-monto').value = '';
+            document.getElementById('vehiculo-km').value = '';
+        }
+
+        function enviarLunaFem() {
+            const monto = document.getElementById('luna-monto').value;
+            const tipo = document.getElementById('luna-tipo').value;
+            window.registrarMovimientoLunaFem(tipo, monto);
+            
+            document.getElementById('luna-monto').value = '';
+        }
+
+        function enviarClinica() {
+            const monto = document.getElementById('clinica-monto').value;
+            const tipo = document.getElementById('clinica-tipo').value;
+            window.registrarMovimientoClinica(tipo, monto);
+            
+            document.getElementById('clinica-monto').value = '';
+        }
+    </script>
+
+    <!-- Conexión con nuestro motor lógico principal (Firebase y IA) -->
+    <script type="module" src="app.js"></script>
+
+    <!-- Registro del Service Worker (Para que sea instalable como App en el celular) -->
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('sw.js')
+            .then(reg => console.log('Service Worker registrado bajo la gracia de Dios:', reg.scope))
+            .catch(err => console.log('Error al registrar el Service Worker:', err));
+        });
+      }
+    </script>
+
+</body>
+</html>

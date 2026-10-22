@@ -1,0 +1,222 @@
+/* ==========================================================================
+   Variables de Color y Diseño (Tonos Verdes, Blanco y Dorado)
+   ========================================================================== */
+:root {
+    --verde-principal: #2E7D32; /* Verde bosque elegante */
+    --verde-claro: #E8F5E9; /* Fondo suave para resaltar tarjetas */
+    --verde-oscuro: #1B5E20; /* Para textos resaltados y botones al hacer clic */
+    --dorado: #D4AF37; /* Dorado metálico y sobrio */
+    --dorado-claro: #F9E79F; /* Dorado suave para fondos de advertencia o alertas */
+    --blanco: #FFFFFF;
+    --texto-principal: #2C3E50;
+    --texto-secundario: #7F8C8D;
+    --fondo-app: #F4F7F6; /* Un blanco ligeramente grisáceo para que el blanco puro resalte */
+    --sombra-tarjeta: 0 4px 15px rgba(0, 0, 0, 0.05);
+    --radio-borde: 12px;
+}
+
+/* ==========================================================================
+   Estilos Generales
+   ========================================================================== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+}
+
+body {
+    background-color: var(--fondo-app);
+    color: var(--texto-principal);
+    line-height: 1.6;
+}
+
+h1, h2, h3, h4 {
+    color: var(--verde-oscuro);
+    font-weight: 600;
+}
+
+/* ==========================================================================
+   Encabezado (Header)
+   ========================================================================== */
+header {
+    background-color: var(--verde-principal);
+    color: var(--blanco);
+    padding: 20px;
+    text-align: center;
+    border-bottom: 4px solid var(--dorado);
+    box-shadow: var(--sombra-tarjeta);
+}
+
+header h1 {
+    color: var(--blanco);
+    font-size: 1.8rem;
+    margin-bottom: 5px;
+}
+
+/* Versículo diario */
+.versiculo-diario {
+    font-style: italic;
+    font-size: 0.95rem;
+    color: var(--dorado-claro);
+    margin-top: 10px;
+    padding: 10px;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: var(--radio-borde);
+}
+
+/* ==========================================================================
+   Contenedor Principal y Dashboard
+   ========================================================================== */
+.contenedor {
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 0 15px;
+}
+
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+/* ==========================================================================
+   Tarjetas (Módulos de Negocios, Gastos, Primicias)
+   ========================================================================== */
+.tarjeta {
+    background-color: var(--blanco);
+    border-radius: var(--radio-borde);
+    padding: 20px;
+    box-shadow: var(--sombra-tarjeta);
+    border-top: 3px solid var(--verde-principal);
+    transition: transform 0.2s ease;
+}
+
+.tarjeta:hover {
+    transform: translateY(-2px);
+}
+
+/* Tarjeta especial para Diezmos y Ofrendas */
+.tarjeta.primicias {
+    border-top: 3px solid var(--dorado);
+    background-color: #FFFCF2; /* Un levísimo tono cálido */
+}
+
+/* Tarjetas de Negocios (Luna Fem y Clínica) */
+.tarjeta.negocio h3 {
+    color: var(--verde-principal);
+    border-bottom: 1px solid var(--verde-claro);
+    padding-bottom: 10px;
+    margin-bottom: 15px;
+}
+
+/* ==========================================================================
+   Formularios, Entradas y Botones
+   ========================================================================== */
+.form-grupo {
+    margin-bottom: 15px;
+}
+
+.form-grupo label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 500;
+    font-size: 0.9rem;
+}
+
+input[type="text"],
+input[type="number"],
+input[type="date"],
+select {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: border-color 0.3s;
+}
+
+input:focus,
+select:focus {
+    outline: none;
+    border-color: var(--verde-principal);
+    box-shadow: 0 0 0 2px var(--verde-claro);
+}
+
+button {
+    background-color: var(--verde-principal);
+    color: var(--blanco);
+    border: none;
+    padding: 12px 20px;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    width: 100%;
+    transition: background-color 0.3s, transform 0.1s;
+}
+
+button:hover {
+    background-color: var(--verde-oscuro);
+}
+
+button:active {
+    transform: scale(0.98);
+}
+
+/* Botón secundario o de acción especial (ej. Consejero IA) */
+button.btn-dorado {
+    background-color: var(--dorado);
+    color: var(--texto-principal);
+}
+
+button.btn-dorado:hover {
+    background-color: #C5A028; /* Dorado más oscuro */
+}
+
+/* ==========================================================================
+   Sección de Vehículo (Combustible y Kilometraje)
+   ========================================================================== */
+.vehiculo-stats {
+    display: flex;
+    justify-content: space-between;
+    background-color: var(--verde-claro);
+    padding: 10px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    font-size: 0.9rem;
+}
+
+.vehiculo-stats span {
+    font-weight: 600;
+    color: var(--verde-oscuro);
+}
+
+/* ==========================================================================
+   Metas de Inversión y Barras de Progreso
+   ========================================================================== */
+.meta-inversion {
+    margin-bottom: 15px;
+}
+
+.meta-info {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 5px;
+    font-size: 0.9rem;
+}
+
+.barra-progreso-fondo {
+    background-color: #e0e0e0;
+    height: 12px;
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+.barra-progreso {
+    background-color: var(--dorado);
+    height: 100%;
+    width: 0%; /* Esto se llenará dinámicamente con JS */
+    transition: width 0.5s ease-in-out;
+}
