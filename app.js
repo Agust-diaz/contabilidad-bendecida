@@ -1,27 +1,31 @@
-// ==========================================================================
-// IMPORTACIONES (Versión 13.1.0 para coincidir con tu firebase-config.js)
-// ==========================================================================
 import { auth, db } from './firebase-config.js';
 import { collection, addDoc, onSnapshot, serverTimestamp, query, orderBy } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-firestore.js";
 import { signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-auth.js";
 
 const transaccionesRef = collection(db, "transacciones");
+let estadoActual = {
+    saldo: 0,
+    ingresosNetos: 0,
+    gastosTotales: 0,
+    gastosPorCategoria: {},
+    primiciasDadas: 0,
+    vehiculo: { costoTotal: 0, odoMin: null, odoMax: null },
+    historial: []
+};
 
-// ==========================================================================
-// 1. SEGURIDAD Y CONTROL DE SESIÓN
-// ==========================================================================
+// ==========================================
+// SEGURIDAD Y SESIÓN
+// ==========================================
 window.iniciarSesion = async () => {
     const email = document.getElementById('email-login').value;
     const pass = document.getElementById('password-login').value;
-    const msjError = document.getElementById('login-error');
-    
+    const msj = document.getElementById('login-error');
     try {
         await signInWithEmailAndPassword(auth, email, pass);
-        msjError.style.display = "none";
+        msj.classList.add('hidden');
     } catch (error) {
-        console.error("Error al iniciar sesión:", error);
-        msjError.innerText = "Credenciales incorrectas. Verifica tu acceso.";
-        msjError.style.display = "block";
+        msj.innerText = "Credenciales incorrectas.";
+        msj.classList.remove('hidden');
     }
 };
 
@@ -29,178 +33,183 @@ window.cerrarSesion = () => signOut(auth);
 
 onAuthStateChanged(auth, (user) => {
     if (user) {
-        document.getElementById('pantalla-login').style.display = 'none';
-        document.getElementById('pantalla-dashboard').style.display = 'block';
-        escucharBaseDeDatos(); // Solo lee la base de datos si hay sesión activa
+        document.getElementById('login-screen').classList.add('hidden');
+        document.getElementById('app-container').classList.remove('hidden');
+        escucharBaseDeDatos();
     } else {
-        document.getElementById('pantalla-login').style.display = 'flex';
-        document.getElementById('pantalla-dashboard').style.display = 'none';
+        document.getElementById('login-screen').classList.remove('hidden');
+        document.getElementById('app-container').classList.add('hidden');
     }
 });
 
-// ==========================================================================
-// 2. VERSÍCULOS DIARIOS
-// ==========================================================================
-const versiculosFinancieros = [
-    "Honra al Señor con tus riquezas y con los primeros frutos de tus cosechas. (Proverbios 3:9)",
-    "Los planes del diligente ciertamente tienden a la abundancia. (Proverbios 21:5)",
-    "Porque donde esté tu tesoro, allí estará también tu corazón. (Mateo 6:21)",
-    "El rico domina a los pobres, y el deudor es esclavo del acreedor. (Proverbios 22:7)",
-    "Y mi Dios proveerá a todas vuestras necesidades, conforme a sus riquezas en gloria. (Filipenses 4:19)"
-];
-
-function mostrarVersiculoDiario() {
-    const contenedor = document.getElementById('versiculo-diario-texto');
-    if (contenedor) {
-        const indiceAleatorio = Math.floor(Math.random() * versiculosFinancieros.length);
-        contenedor.innerText = versiculosFinancieros[indiceAleatorio];
+// ==========================================
+// LÓGICA DE REGISTRO
+// ==========================================
+async function guardar(tipo, monto, categoria, detalle) {
+    if (!monto || monto <= 0) return window.showToast("Monto inválido", "error");
+    try {
+        await addDoc(transaccionesRef, { tipo, monto: Number(monto), categoria, detalle, fecha: serverTimestamp() });
+        window.showToast("Registro guardado con éxito");
+    } catch (e) {
+        window.showToast("Error de conexión", "error");
     }
 }
 
-// ==========================================================================
-// 3. ESTADO GLOBAL (Sincronizado desde Firestore)
-// ==========================================================================
-let estadoActual = {
-    saldoFamiliar: 0,
-    lunaFem: { ingresos: 0, gastosMercaderia: 0, alquiler: 0 },
-    clinica: { ingresos: 0, gastosMercaderia: 0 },
-    vehiculo: { totalGastoReales: 0, kilometrosRodados: 0 }
+window.registrarNegocio = (negocio) => {
+    const ing = parseFloat(document.getElementById(`${negocio}-ingreso`).value) || 0;
+    const merc = parseFloat(document.getElementById(`${negocio}-mercaderia`).value) || 0;
+    const gas = parseFloat(document.getElementById(`${negocio}-gastos`).value) || 0;
+    const ganancia = ing - (merc + gas);
+    
+    if(ganancia !== 0) guardar('negocio', ganancia, negocio, `Ganancia neta ${negocio}`);
+    document.getElementById(`${negocio}-ingreso`).value = '';
+    document.getElementById(`${negocio}-mercaderia`).value = '';
+    document.getElementById(`${negocio}-gastos`).value = '';
 };
 
-// ==========================================================================
-// 4. GUARDAR Y LEER EN LA NUBE (FIRESTORE)
-// ==========================================================================
-async function guardarEnNube(tipo, monto, categoria, detalleExtra = "") {
-    if (monto <= 0) {
-        alert("El monto debe ser mayor a cero.");
-        return;
-    }
-    try {
-        await addDoc(transaccionesRef, {
-            tipo: tipo,
-            monto: Number(monto),
-            categoria: categoria,
-            detalle: detalleExtra,
-            fecha: serverTimestamp()
-        });
-        alert("Registro guardado correctamente.");
-    } catch (error) {
-        console.error("Error guardando en la nube:", error);
-        alert("Hubo un error al guardar. Revisa tu conexión.");
-    }
-}
+window.registrarCarga = () => {
+    const costo = parseFloat(document.getElementById('vehiculo-costo').value);
+    const km = parseFloat(document.getElementById('vehiculo-km').value); // Odómetro total
+    if(km) guardar('vehiculo', costo, 'Combustible', km);
+    document.getElementById('vehiculo-costo').value = '';
+    document.getElementById('vehiculo-km').value = '';
+};
 
-window.registrarGasto = (monto, categoria, descripcion) => guardarEnNube('gasto_familiar', monto, categoria, descripcion);
-window.registrarMovimientoLunaFem = (categoria, monto) => guardarEnNube('luna_fem', monto, categoria, "");
-window.registrarMovimientoClinica = (categoria, monto) => guardarEnNube('clinica', monto, categoria, "");
-window.registrarCargaVehiculo = (montoReales, kmActuales) => guardarEnNube('vehiculo', montoReales, "Combustible", kmActuales);
+window.guardarGastoFamiliar = () => {
+    const desc = document.getElementById('gasto-desc').value;
+    const cat = document.getElementById('gasto-categoria').value;
+    const monto = parseFloat(document.getElementById('gasto-monto').value);
+    if(desc && monto) guardar('gasto', monto, cat, desc);
+    document.getElementById('gasto-desc').value = '';
+    document.getElementById('gasto-monto').value = '';
+};
 
+// ==========================================
+// SINCRONIZACIÓN Y CÁLCULOS
+// ==========================================
 function escucharBaseDeDatos() {
     const q = query(transaccionesRef, orderBy("fecha", "desc"));
-    
     onSnapshot(q, (snapshot) => {
         estadoActual = {
-            saldoFamiliar: 0,
-            lunaFem: { ingresos: 0, gastosMercaderia: 0, alquiler: 0 },
-            clinica: { ingresos: 0, gastosMercaderia: 0 },
-            vehiculo: { totalGastoReales: 0, kilometrosRodados: 0 }
+            saldo: 0, ingresosNetos: 0, gastosTotales: 0, primiciasDadas: 0,
+            gastosPorCategoria: {}, historial: [],
+            vehiculo: { costoTotal: 0, odoMin: null, odoMax: null }
         };
 
         snapshot.forEach((doc) => {
             const data = doc.data();
             
-            if (data.tipo === 'gasto_familiar') estadoActual.saldoFamiliar -= data.monto;
-            
-            if (data.tipo === 'luna_fem') {
-                if (data.categoria === 'ingreso') estadoActual.lunaFem.ingresos += data.monto;
-                if (data.categoria === 'mercaderia') estadoActual.lunaFem.gastosMercaderia += data.monto;
-                if (data.categoria === 'alquiler') estadoActual.lunaFem.alquiler += data.monto;
+            // Historial (Máximo 5 recientes)
+            if(estadoActual.historial.length < 5) {
+                estadoActual.historial.push({ desc: data.detalle || data.categoria, monto: data.monto, esIngreso: data.tipo === 'negocio' });
             }
 
-            if (data.tipo === 'clinica') {
-                if (data.categoria === 'ingreso') estadoActual.clinica.ingresos += data.monto;
-                if (data.categoria === 'mercaderia') estadoActual.clinica.gastosMercaderia += data.monto;
+            if (data.tipo === 'negocio') {
+                estadoActual.ingresosNetos += data.monto;
+                estadoActual.saldo += data.monto;
             }
-
+            if (data.tipo === 'gasto' || data.tipo === 'vehiculo') {
+                estadoActual.gastosTotales += data.monto;
+                estadoActual.saldo -= data.monto;
+            }
+            if (data.tipo === 'gasto') {
+                if(!estadoActual.gastosPorCategoria[data.categoria]) estadoActual.gastosPorCategoria[data.categoria] = 0;
+                estadoActual.gastosPorCategoria[data.categoria] += data.monto;
+                if(data.categoria === 'Primicias') estadoActual.primiciasDadas += data.monto;
+            }
             if (data.tipo === 'vehiculo') {
-                estadoActual.vehiculo.totalGastoReales += data.monto;
-                estadoActual.vehiculo.kilometrosRodados += Number(data.detalle);
+                estadoActual.vehiculo.costoTotal += data.monto;
+                const odo = Number(data.detalle);
+                if (estadoActual.vehiculo.odoMax === null) estadoActual.vehiculo.odoMax = odo;
+                estadoActual.vehiculo.odoMin = odo; // Como va del más nuevo al más viejo, el último que lea será el min
             }
         });
+        actualizarInterfaz();
     });
 }
 
-// ==========================================================================
-// 5. CONSEJERO BÍBLICO (IA GEMINI)
-// ==========================================================================
-let GEMINI_API_KEY = localStorage.getItem('gemini_api_key') || '';
+function actualizarInterfaz() {
+    const format = (n) => `R$ ${n.toFixed(2)}`;
+    
+    // Dashboard
+    document.getElementById('dash-balance').innerText = format(estadoActual.saldo);
+    document.getElementById('dash-balance').className = `text-3xl font-bold mt-2 ${estadoActual.saldo >= 0 ? 'text-green-900' : 'text-red-600'}`;
+    document.getElementById('dash-ingresos').innerText = format(estadoActual.ingresosNetos);
+    document.getElementById('dash-gastos').innerText = format(estadoActual.gastosTotales);
+    document.getElementById('dash-diezmo-rec').innerText = format(estadoActual.ingresosNetos * 0.10);
+    document.getElementById('dash-diezmo-dado').innerText = format(estadoActual.primiciasDadas);
 
-function configurarApiKey() {
-    const key = prompt("Por favor, ingresa tu API Key de Gemini para el Consejero Bíblico:");
-    if (key) {
-        GEMINI_API_KEY = key;
-        localStorage.setItem('gemini_api_key', key);
-        alert("Clave guardada en tu dispositivo.");
+    // Historial
+    const histHtml = document.getElementById('dash-movimientos');
+    histHtml.innerHTML = estadoActual.historial.length ? estadoActual.historial.map(h => `
+        <li class="flex justify-between py-2 border-b last:border-0 text-sm">
+            <span class="text-gray-700">${h.desc}</span>
+            <span class="font-bold ${h.esIngreso ? 'text-green-600' : 'text-red-600'}">${h.esIngreso ? '+' : '-'}${format(h.monto)}</span>
+        </li>`).join('') : '<li class="text-gray-400 text-sm">Sin movimientos</li>';
+
+    // Vehículos (Cálculo inteligente)
+    document.getElementById('vehiculo-total-costo').innerText = format(estadoActual.vehiculo.costoTotal);
+    let kmRecorridos = 0;
+    if(estadoActual.vehiculo.odoMax && estadoActual.vehiculo.odoMin) {
+        kmRecorridos = estadoActual.vehiculo.odoMax - estadoActual.vehiculo.odoMin;
     }
+    const efi = kmRecorridos > 0 ? (estadoActual.vehiculo.costoTotal / kmRecorridos).toFixed(2) : '0.00';
+    document.getElementById('vehiculo-eficiencia').innerText = `${efi} R$/km`;
+
+    // Gastos por Categoría
+    const catHtml = document.getElementById('lista-categorias-gastos');
+    catHtml.innerHTML = Object.entries(estadoActual.gastosPorCategoria).map(([cat, m]) => `
+        <li class="p-3 flex justify-between hover:bg-gray-50">
+            <span class="text-gray-700 font-medium">${cat}</span>
+            <span class="font-bold text-gray-900">${format(m)}</span>
+        </li>`).join('');
 }
 
-window.consultarConsejeroBiblico = async () => {
-    if (!GEMINI_API_KEY) {
-        configurarApiKey();
-        if (!GEMINI_API_KEY) return;
+// ==========================================
+// CONSEJERO BÍBLICO (IA GEMINI)
+// ==========================================
+window.pedirConsejoIA = async () => {
+    let key = localStorage.getItem('gemini_key');
+    if(!key) {
+        key = prompt("Ingresa tu clave de Gemini:");
+        if(key) localStorage.setItem('gemini_key', key);
+        else return;
     }
 
-    const aporteLunaFem = estadoActual.lunaFem.ingresos - (estadoActual.lunaFem.gastosMercaderia + estadoActual.lunaFem.alquiler);
-    const aporteClinica = estadoActual.clinica.ingresos - estadoActual.clinica.gastosMercaderia;
-    const costoKm = estadoActual.vehiculo.kilometrosRodados > 0 
-        ? (estadoActual.vehiculo.totalGastoReales / estadoActual.vehiculo.kilometrosRodados).toFixed(2) 
-        : 0;
+    const btn = document.getElementById('btn-consejo');
+    const chat = document.getElementById('chat-box');
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Analizando...';
+    btn.disabled = true;
 
-    const contextoFinanciero = `
-        Estado actual:
-        - Gastos familiares: R$${Math.abs(estadoActual.saldoFamiliar)}
-        - Ganancia Luna Fem: R$${aporteLunaFem} (Ingresos: ${estadoActual.lunaFem.ingresos}, Gastos: ${estadoActual.lunaFem.gastosMercaderia}, Alquiler: ${estadoActual.lunaFem.alquiler})
-        - Ganancia Clínica Natalia Ripoll: R$${aporteClinica} (Ingresos: ${estadoActual.clinica.ingresos}, Gastos: ${estadoActual.clinica.gastosMercaderia})
-        - Vehículo: R$${estadoActual.vehiculo.totalGastoReales} gastados, Costo por km: R$${costoKm}
-    `;
-
-    const promptInstruccion = `
-        Eres el consejero financiero de Contabilidad Bendecida, una app para un matrimonio cristiano. 
-        Tus respuestas deben tener un enfoque estrictamente bíblico. Todo debe pasar por el filtro de la palabra de Dios, reconociendo que Jesús es el camino, la verdad y la vida.
-        Analiza este resumen financiero y dales un consejo práctico y espiritual, acompañado de un versículo bíblico exacto:
-        ${contextoFinanciero}
-    `;
-
-    const divRespuesta = document.getElementById('respuesta-consejero');
-    if (divRespuesta) divRespuesta.innerText = "Buscando sabiduría en la Palabra... (Consultando)";
+    const resumen = `Saldo: ${estadoActual.saldo}, Ingresos: ${estadoActual.ingresosNetos}, Gastos: ${estadoActual.gastosTotales}, Primicias: ${estadoActual.primiciasDadas}`;
+    const promptTexto = `Eres un sabio consejero financiero cristiano. Analiza este resumen de una familia: ${resumen}. Escribe 2 párrafos con aliento bíblico (cita exacta) y un consejo práctico. Usa formato HTML simple.`;
 
     try {
-        const respuesta = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ contents: [{ parts: [{ text: promptInstruccion }] }] })
+        const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${key}`, {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ contents: [{ parts: [{ text: promptTexto }] }] })
         });
-
-        const datos = await respuesta.json();
+        const data = await res.json();
+        const respuesta = data.candidates[0].content.parts[0].text;
         
-        if (datos.error) {
-            console.error("Error API:", datos.error);
-            if (divRespuesta) divRespuesta.innerText = "Hubo un error al consultar. Verifica tu API Key de Gemini.";
-            return;
-        }
-
-        const consejoText = datos.candidates[0].content.parts[0].text;
-        if (divRespuesta) divRespuesta.innerHTML = `<strong>Consejo Bíblico:</strong><br><br>${consejoText.replace(/\n/g, '<br>')}`;
-
-    } catch (error) {
-        console.error("Error de red:", error);
-        if (divRespuesta) divRespuesta.innerText = "Error de conexión al buscar el consejo.";
+        chat.innerHTML += `
+        <div class="flex items-start mt-4">
+            <div class="bg-white border text-gray-800 rounded-2xl rounded-tl-none p-4 max-w-[90%] text-sm shadow-sm leading-relaxed">
+                ${respuesta}
+            </div>
+        </div>`;
+        chat.scrollTop = chat.scrollHeight;
+    } catch (e) {
+        window.showToast("Error al conectar con el Consejero.", "error");
     }
+    btn.innerHTML = '<i class="fas fa-lightbulb mr-2"></i> Pedir Nuevo Consejo';
+    btn.disabled = false;
 };
 
-// ==========================================================================
-// INICIALIZACIÓN BÁSICA
-// ==========================================================================
 document.addEventListener("DOMContentLoaded", () => {
-    mostrarVersiculoDiario();
+    const verses = [
+        "«Los planes del diligente ciertamente tienden a la abundancia...» - Proverbios 21:5",
+        "«Honra a Jehová con tus bienes, y con las primicias de todos tus frutos...» - Proverbios 3:9"
+    ];
+    document.getElementById('versiculo-diario-texto').innerText = verses[Math.floor(Math.random() * verses.length)];
 });

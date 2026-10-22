@@ -2,191 +2,263 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Contabilidad Bendecida</title>
     
-    <link rel="stylesheet" href="style.css">
     <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#1f6022">
+    <meta name="theme-color" content="#143d29">
+    
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        green: { 900: '#143d29', 800: '#1e5c3e', 700: '#277a52', 50: '#f0fdf4' },
+                        gold: { 400: '#facc15', 500: '#d4af37', 600: '#b8962e' }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        serif: ['Playfair Display', 'serif'],
+                    }
+                }
+            }
+        }
+    </script>
 </head>
-<body>
+<body class="text-gray-800 antialiased h-screen flex flex-col overflow-hidden">
 
-    <!-- ================= PANTALLA DE LOGIN ================= -->
-    <div id="pantalla-login" class="login-container">
-        <div class="tarjeta-login">
-            <h2>Contabilidad Bendecida</h2>
-            <p style="margin-bottom: 20px; font-style: italic; font-size: 0.9rem; color: var(--texto-secundario);">
-                "El prudente ve el peligro y lo evita..." (Proverbios 22:3)
-            </p>
+    <!-- Login Overlay -->
+    <div id="login-screen" class="fixed inset-0 bg-green-900 z-50 flex items-center justify-center transition-opacity duration-500">
+        <div class="bg-white p-8 rounded-2xl shadow-2xl max-w-md w-full mx-4 text-center border-t-4 border-gold-500">
+            <i class="fas fa-dove text-4xl text-gold-500 mb-4"></i>
+            <h1 class="text-3xl font-serif font-semibold text-green-900 mb-2">Contabilidad Bendecida</h1>
+            <p class="text-gray-500 mb-6 text-sm">"El prudente ve el peligro y lo evita..." - Proverbios 22:3</p>
             
-            <div class="form-grupo" style="text-align: left;">
-                <label>Correo Electrónico</label>
-                <input type="email" id="email-login" placeholder="agustin@ejemplo.com">
+            <div class="space-y-4 text-left">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Correo Electrónico</label>
+                    <input type="email" id="email-login" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-gold-500 focus:ring focus:ring-gold-500 focus:ring-opacity-50 p-2 border">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Contraseña</label>
+                    <input type="password" id="password-login" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-gold-500 focus:ring focus:ring-gold-500 focus:ring-opacity-50 p-2 border">
+                </div>
+                <button onclick="window.iniciarSesion()" class="w-full bg-green-800 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-md transition duration-200">
+                    Ingresar Seguro
+                </button>
+                <p id="login-error" class="text-red-500 text-sm mt-2 hidden text-center font-bold"></p>
             </div>
-            <div class="form-grupo" style="text-align: left;">
-                <label>Contraseña</label>
-                <input type="password" id="password-login" placeholder="••••••••">
-            </div>
-            
-            <button onclick="iniciarSesion()">Ingresar Seguro</button>
-            <p id="login-error" style="color: #e74c3c; font-size: 0.85rem; margin-top: 15px; display: none; font-weight: bold;"></p>
         </div>
     </div>
 
-    <!-- ================= DASHBOARD PRINCIPAL ================= -->
-    <div id="pantalla-dashboard" style="display: none;">
-        <header>
-            <div style="display: flex; justify-content: space-between; align-items: center; max-width: 1000px; margin: 0 auto;">
-                <h1 style="margin: 0;">Contabilidad Bendecida</h1>
-                <button onclick="cerrarSesion()" style="width: auto; padding: 8px 15px; font-size: 0.9rem; background: rgba(255,255,255,0.1); border: 1px solid var(--dorado);">Cerrar Sesión</button>
+    <!-- Main App Container -->
+    <div id="app-container" class="flex flex-col h-full hidden">
+        
+        <header class="bg-green-900 text-white shadow-md z-10">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between items-center h-16">
+                    <div class="flex items-center">
+                        <i class="fas fa-leaf text-gold-500 mr-3 text-xl"></i>
+                        <span class="font-serif text-xl font-semibold tracking-wide">Familia Ripoll</span>
+                    </div>
+                    <button onclick="window.cerrarSesion()" class="text-sm text-green-100 hover:text-white transition">
+                        <i class="fas fa-sign-out-alt"></i> Salir
+                    </button>
+                </div>
             </div>
-            <div id="versiculo-diario-texto" class="versiculo-diario">
-                Buscando la sabiduría de la Palabra...
+            
+            <div class="bg-green-800 border-b border-gold-500/30 text-center py-2 px-4">
+                <p id="versiculo-diario-texto" class="text-sm font-serif italic text-gold-400">Cargando palabra...</p>
             </div>
+
+            <nav class="hidden md:flex overflow-x-auto justify-center bg-green-900 px-4">
+                <div class="flex space-x-1">
+                    <button onclick="nav('dashboard')" id="nav-dashboard" class="nav-btn nav-active px-4 py-3 text-sm font-medium text-green-100 hover:text-white"><i class="fas fa-chart-pie mr-2"></i>Dashboard</button>
+                    <button onclick="nav('negocios')" id="nav-negocios" class="nav-btn px-4 py-3 text-sm font-medium text-green-100 hover:text-white"><i class="fas fa-store mr-2"></i>Negocios</button>
+                    <button onclick="nav('vehiculos')" id="nav-vehiculos" class="nav-btn px-4 py-3 text-sm font-medium text-green-100 hover:text-white"><i class="fas fa-car mr-2"></i>Vehículos</button>
+                    <button onclick="nav('gastos')" id="nav-gastos" class="nav-btn px-4 py-3 text-sm font-medium text-green-100 hover:text-white"><i class="fas fa-wallet mr-2"></i>Gastos</button>
+                    <button onclick="nav('consejero')" id="nav-consejero" class="nav-btn px-4 py-3 text-sm font-medium text-green-100 hover:text-white"><i class="fas fa-comment-dots mr-2"></i>Consejero Bíblico</button>
+                </div>
+            </nav>
         </header>
 
-        <main class="contenedor">
+        <main class="flex-1 overflow-y-auto p-4 md:p-8 bg-green-50">
             
-            <div class="dashboard-grid">
-                
-                <!-- 1. GASTOS Y PRIMICIAS -->
-                <div class="tarjeta primicias">
-                    <h3>Gastos Familiares y Primicias</h3>
-                    <div class="form-grupo">
-                        <label>Monto (R$):</label>
-                        <input type="number" id="gasto-monto" placeholder="Ej: 150.00" step="0.01">
+            <!-- SECTION: DASHBOARD -->
+            <div id="sec-dashboard" class="section-content fade-in max-w-5xl mx-auto">
+                <h2 class="text-2xl font-serif text-green-900 font-bold mb-6">Resumen Financiero</h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+                    <div class="glass-card rounded-xl p-6 relative overflow-hidden">
+                        <div class="absolute top-0 right-0 -mr-4 -mt-4 text-green-100 opacity-50"><i class="fas fa-wallet text-6xl"></i></div>
+                        <h3 class="text-gray-500 font-medium text-sm">Saldo Disponible</h3>
+                        <p id="dash-balance" class="text-3xl font-bold mt-2">R$ 0.00</p>
                     </div>
-                    <div class="form-grupo">
-                        <label>Categoría:</label>
-                        <select id="gasto-cat">
-                            <option value="Primicias (Diezmos y Ofrendas)">Primicias (Diezmos y Ofrendas)</option>
-                            <option value="Comida">Comida (Supermercado, Panadería)</option>
-                            <option value="Vivienda">Vivienda (Alquiler, Mantenimiento)</option>
-                            <option value="Servicios">Servicios (Luz, Agua, Wifi)</option>
-                            <option value="Otros Gastos">Otros Gastos (Comida afuera, Extras)</option>
-                        </select>
+                    <div class="glass-card rounded-xl p-6">
+                        <h3 class="text-gray-500 font-medium text-sm">Ingresos Totales (Negocios)</h3>
+                        <p id="dash-ingresos" class="text-2xl font-bold text-blue-600 mt-2">R$ 0.00</p>
                     </div>
-                    <div class="form-grupo">
-                        <label>Descripción / Detalle:</label>
-                        <input type="text" id="gasto-desc" placeholder="Ej: Compra mensual">
+                    <div class="glass-card rounded-xl p-6">
+                        <h3 class="text-gray-500 font-medium text-sm">Gastos (Inc. Primicias)</h3>
+                        <p id="dash-gastos" class="text-2xl font-bold text-red-600 mt-2">R$ 0.00</p>
                     </div>
-                    <button onclick="enviarGasto()">Registrar Fielmente</button>
                 </div>
 
-                <!-- 2. VEHÍCULO -->
-                <div class="tarjeta">
-                    <h3>Vehículo (Combustible)</h3>
-                    <p style="font-size: 0.85rem; color: var(--texto-secundario); margin-bottom: 10px;">
-                        Control de mayordomía: Calcula tu costo por kilómetro.
-                    </p>
-                    <div class="form-grupo">
-                        <label>Costo del Combustible (R$):</label>
-                        <input type="number" id="vehiculo-monto" placeholder="Ej: 200.00">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div class="bg-white rounded-xl shadow-sm border border-gold-500/20 p-6">
+                        <h3 class="text-lg font-serif font-bold text-green-900 mb-4 border-b pb-2"><i class="fas fa-gift text-gold-500 mr-2"></i>Primicias</h3>
+                        <div class="flex justify-between items-center mb-4">
+                            <span class="text-gray-600">Meta sugerida (10% negocios):</span>
+                            <span id="dash-diezmo-rec" class="font-bold text-green-800">R$ 0.00</span>
+                        </div>
+                        <div class="flex justify-between items-center bg-gray-50 p-3 rounded-lg border border-gray-100">
+                            <span class="text-gray-800 font-medium">Primicias dadas:</span>
+                            <span id="dash-diezmo-dado" class="font-bold text-gold-600">R$ 0.00</span>
+                        </div>
                     </div>
-                    <div class="form-grupo">
-                        <label>Kilómetros Rodados:</label>
-                        <input type="number" id="vehiculo-km" placeholder="Ej: 350">
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                        <h3 class="text-lg font-serif font-bold text-green-900 mb-4 border-b pb-2"><i class="fas fa-history text-green-700 mr-2"></i>Últimos Movimientos</h3>
+                        <ul id="dash-movimientos" class="space-y-3"></ul>
                     </div>
-                    <button onclick="enviarVehiculo()">Registrar Viaje</button>
                 </div>
-
-                <!-- 3. LUNA FEM BRASIL -->
-                <div class="tarjeta negocio">
-                    <h3>Luna Fem Brasil</h3>
-                    <div class="form-grupo">
-                        <label>Monto (R$):</label>
-                        <input type="number" id="luna-monto" placeholder="Ej: 500.00">
-                    </div>
-                    <div class="form-grupo">
-                        <label>Tipo de Movimiento:</label>
-                        <select id="luna-tipo">
-                            <option value="ingreso">Ingreso por Ventas</option>
-                            <option value="mercaderia">Inversión en Mercadería</option>
-                            <option value="alquiler">Pago de Alquiler</option>
-                        </select>
-                    </div>
-                    <button onclick="enviarLunaFem()">Registrar Movimiento</button>
-                </div>
-
-                <!-- 4. CLÍNICA NATALIA RIPOLL -->
-                <div class="tarjeta negocio">
-                    <h3>Clínica Natalia Ripoll Estética</h3>
-                    <div class="form-grupo">
-                        <label>Monto (R$):</label>
-                        <input type="number" id="clinica-monto" placeholder="Ej: 800.00">
-                    </div>
-                    <div class="form-grupo">
-                        <label>Tipo de Movimiento:</label>
-                        <select id="clinica-tipo">
-                            <option value="ingreso">Ingreso por Servicios</option>
-                            <option value="mercaderia">Inversión en Insumos</option>
-                        </select>
-                    </div>
-                    <button onclick="enviarClinica()">Registrar Movimiento</button>
-                </div>
-
             </div>
 
-            <!-- 5. CONSEJERO BÍBLICO DE IA -->
-            <div class="tarjeta" style="border-top: 3px solid var(--dorado); text-align: center; margin-top: 25px;">
-                <h3>Consejero Financiero Bíblico</h3>
-                <p style="font-size: 0.95rem; margin-bottom: 20px;">
-                    Busca consejo basado en la Palabra de Dios para la administración de sus recursos.
-                </p>
-                <button class="btn-dorado" onclick="window.consultarConsejeroBiblico()">Buscar Sabiduría Financiera</button>
-                
-                <div id="respuesta-consejero" style="margin-top: 20px; padding: 15px; background: var(--verde-claro); border-radius: 8px; text-align: left; font-size: 0.95rem;">
-                    <em>"Encomienda a Jehová tus obras, y tus pensamientos serán afirmados." (Proverbios 16:3)</em>
+            <!-- SECTION: NEGOCIOS -->
+            <div id="sec-negocios" class="section-content hidden fade-in max-w-5xl mx-auto">
+                <h2 class="text-2xl font-serif text-green-900 font-bold mb-6">Gestión de Negocios</h2>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <!-- Luna Fem -->
+                    <div class="bg-white rounded-xl shadow-md border-t-4 border-pink-500 p-6">
+                        <h3 class="text-xl font-bold text-gray-800 mb-4"><i class="fas fa-tshirt text-pink-500 mr-2"></i>Luna Fem Brasil</h3>
+                        <input type="number" id="luna-ingreso" class="w-full mb-3 rounded-md p-2 border" placeholder="Ingresos / Ventas">
+                        <input type="number" id="luna-mercaderia" class="w-full mb-3 rounded-md p-2 border" placeholder="Inversión Mercadería">
+                        <input type="number" id="luna-gastos" class="w-full mb-4 rounded-md p-2 border" placeholder="Alquiler / Otros">
+                        <button onclick="registrarNegocio('luna')" class="w-full bg-pink-600 hover:bg-pink-700 text-white font-bold py-2 rounded-md transition">Registrar Luna Fem</button>
+                    </div>
+                    <!-- Clínica -->
+                    <div class="bg-white rounded-xl shadow-md border-t-4 border-teal-500 p-6">
+                        <h3 class="text-xl font-bold text-gray-800 mb-4"><i class="fas fa-spa text-teal-500 mr-2"></i>Clínica Estética</h3>
+                        <input type="number" id="clinica-ingreso" class="w-full mb-3 rounded-md p-2 border" placeholder="Ventas / Servicios">
+                        <input type="number" id="clinica-mercaderia" class="w-full mb-3 rounded-md p-2 border" placeholder="Inversión Insumos">
+                        <input type="number" id="clinica-gastos" class="w-full mb-4 rounded-md p-2 border" placeholder="Gastos Extra">
+                        <button onclick="registrarNegocio('clinica')" class="w-full bg-teal-600 hover:bg-teal-700 text-white font-bold py-2 rounded-md transition">Registrar Clínica</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECTION: VEHÍCULOS -->
+            <div id="sec-vehiculos" class="section-content hidden fade-in max-w-4xl mx-auto">
+                <h2 class="text-2xl font-serif text-green-900 font-bold mb-6">Gestión de Vehículos</h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="md:col-span-1 bg-white rounded-xl p-6 border">
+                        <h3 class="font-bold mb-4 border-b pb-2">Registrar Carga</h3>
+                        <input type="number" id="vehiculo-costo" class="w-full mb-3 p-2 border rounded" placeholder="Costo Combustible (R$)">
+                        <input type="number" id="vehiculo-km" class="w-full mb-4 p-2 border rounded" placeholder="Odómetro Actual (Total Km)">
+                        <button onclick="registrarCarga()" class="w-full bg-gray-800 text-white py-2 rounded">Guardar Registro</button>
+                    </div>
+                    <div class="md:col-span-2 bg-white rounded-xl p-6 border">
+                        <div class="grid grid-cols-2 gap-4 mb-4">
+                            <div class="bg-gray-50 p-4 rounded text-center">
+                                <p class="text-xs text-gray-500">Costo Total</p>
+                                <p id="vehiculo-total-costo" class="text-2xl font-bold">R$ 0.00</p>
+                            </div>
+                            <div class="bg-gray-50 p-4 rounded text-center">
+                                <p class="text-xs text-gray-500">Eficiencia Promedio</p>
+                                <p id="vehiculo-eficiencia" class="text-2xl font-bold text-blue-600">0.00 R$/km</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECTION: GASTOS -->
+            <div id="sec-gastos" class="section-content hidden fade-in max-w-4xl mx-auto">
+                <h2 class="text-2xl font-serif text-green-900 font-bold mb-6">Gastos Familiares</h2>
+                <div class="bg-white p-6 rounded-xl border mb-6">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <input type="text" id="gasto-desc" class="p-2 border rounded" placeholder="Descripción">
+                        <select id="gasto-categoria" class="p-2 border rounded">
+                            <option value="Primicias">🎁 Primicias / Ofrendas</option>
+                            <option value="Vivienda">🏠 Vivienda</option>
+                            <option value="Comida">🛒 Supermercado / Comida</option>
+                            <option value="Internet">🌐 Servicios / Internet</option>
+                            <option value="Otros">📝 Otros</option>
+                        </select>
+                        <input type="number" id="gasto-monto" class="p-2 border rounded" placeholder="Monto (R$)">
+                        <button onclick="guardarGastoFamiliar()" class="md:col-span-3 bg-green-700 text-white py-2 rounded">Añadir Gasto</button>
+                    </div>
+                </div>
+                <div class="bg-white rounded-xl border p-4">
+                    <h3 class="font-bold border-b pb-2 mb-4">Desglose por Categoría</h3>
+                    <ul id="lista-categorias-gastos" class="divide-y divide-gray-100"></ul>
+                </div>
+            </div>
+
+            <!-- SECTION: CONSEJERO -->
+            <div id="sec-consejero" class="section-content hidden fade-in max-w-3xl mx-auto">
+                <div class="bg-white rounded-2xl shadow-lg border border-gold-500/30 overflow-hidden">
+                    <div class="bg-gradient-to-r from-green-900 to-green-800 p-6 text-white flex justify-between">
+                        <h2 class="text-2xl font-serif font-bold"><i class="fas fa-scroll text-gold-400 mr-2"></i> Consejero Bíblico</h2>
+                        <i class="fas fa-praying-hands text-3xl text-gold-400"></i>
+                    </div>
+                    <div id="chat-box" class="p-6 h-64 overflow-y-auto bg-gray-50 space-y-4">
+                        <div class="bg-green-100 text-green-900 rounded-2xl rounded-tl-none px-4 py-3 max-w-[85%] text-sm">
+                            ¡Hola! Soy tu consejero. Presiona el botón para que analice tus finanzas a la luz de la Palabra.
+                        </div>
+                    </div>
+                    <div class="p-4 border-t bg-white">
+                        <button onclick="pedirConsejoIA()" id="btn-consejo" class="w-full bg-gold-500 text-white font-bold py-3 rounded-xl shadow">
+                            <i class="fas fa-lightbulb mr-2"></i> Analizar Finanzas
+                        </button>
+                    </div>
                 </div>
             </div>
 
         </main>
+
+        <nav class="md:hidden bg-white border-t border-gray-200 pb-safe">
+            <div class="flex justify-around">
+                <button onclick="nav('dashboard')" class="flex-1 py-3 text-center text-gray-500 hover:text-green-800"><i class="fas fa-chart-pie block mb-1"></i><span class="text-[10px]">Inicio</span></button>
+                <button onclick="nav('negocios')" class="flex-1 py-3 text-center text-gray-500 hover:text-green-800"><i class="fas fa-store block mb-1"></i><span class="text-[10px]">Negocios</span></button>
+                <button onclick="nav('gastos')" class="flex-1 py-3 text-center text-gray-500 hover:text-green-800"><i class="fas fa-wallet block mb-1"></i><span class="text-[10px]">Gastos</span></button>
+                <button onclick="nav('consejero')" class="flex-1 py-3 text-center text-gold-500 font-bold"><i class="fas fa-dove block mb-1"></i><span class="text-[10px]">Consejo</span></button>
+            </div>
+        </nav>
     </div>
 
-    <!-- ================= SCRIPTS ================= -->
-    <script>
-        function enviarGasto() {
-            const monto = document.getElementById('gasto-monto').value;
-            const cat = document.getElementById('gasto-cat').value;
-            const desc = document.getElementById('gasto-desc').value;
-            window.registrarGasto(monto, cat, desc);
-            document.getElementById('gasto-monto').value = '';
-            document.getElementById('gasto-desc').value = '';
-        }
-
-        function enviarVehiculo() {
-            const monto = document.getElementById('vehiculo-monto').value;
-            const km = document.getElementById('vehiculo-km').value;
-            window.registrarCargaVehiculo(monto, km);
-            document.getElementById('vehiculo-monto').value = '';
-            document.getElementById('vehiculo-km').value = '';
-        }
-
-        function enviarLunaFem() {
-            const monto = document.getElementById('luna-monto').value;
-            const tipo = document.getElementById('luna-tipo').value;
-            window.registrarMovimientoLunaFem(tipo, monto);
-            document.getElementById('luna-monto').value = '';
-        }
-
-        function enviarClinica() {
-            const monto = document.getElementById('clinica-monto').value;
-            const tipo = document.getElementById('clinica-tipo').value;
-            window.registrarMovimientoClinica(tipo, monto);
-            document.getElementById('clinica-monto').value = '';
-        }
-    </script>
+    <div id="toast-container" class="fixed bottom-20 right-4 z-50 flex flex-col space-y-2"></div>
 
     <script type="module" src="./app.js"></script>
 
     <script>
-      if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => { 
-            navigator.serviceWorker.register('sw.js')
-            .catch(err => console.log('Error PWA:', err));
-        });
-      }
-    </script>
+        function nav(sectionId) {
+            document.querySelectorAll('.section-content').forEach(el => el.classList.add('hidden'));
+            document.getElementById(`sec-${sectionId}`).classList.remove('hidden');
+            document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('nav-active', 'text-white'));
+            const activeBtn = document.getElementById(`nav-${sectionId}`);
+            if(activeBtn) {
+                activeBtn.classList.add('nav-active', 'text-white');
+                activeBtn.classList.remove('text-green-100');
+            }
+        }
+        
+        window.showToast = (message, type = 'success') => {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `p-4 rounded text-white text-sm transition-all duration-300 translate-y-10 opacity-0 ${type === 'success' ? 'bg-green-600' : 'bg-red-500'}`;
+            toast.innerHTML = `<i class="fas ${type === 'success' ? 'fa-check' : 'fa-exclamation'} mr-2"></i> ${message}`;
+            container.appendChild(toast);
+            setTimeout(() => toast.classList.remove('translate-y-10', 'opacity-0'), 10);
+            setTimeout(() => { toast.classList.add('opacity-0'); setTimeout(() => toast.remove(), 300); }, 3000);
+        };
 
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => navigator.serviceWorker.register('sw.js'));
+        }
+    </script>
 </body>
 </html>
