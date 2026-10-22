@@ -5,8 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Contabilidad Bendecida</title>
     
-    <!-- Ícono de la pestaña del navegador -->
+    <!-- Logos para el Navegador (URL) y celulares Apple/Android -->
     <link rel="icon" type="image/png" href="icono-192.png">
+    <link rel="apple-touch-icon" href="icono-192.png">
     
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#0f172a">
@@ -38,14 +39,11 @@
     <!-- Pantalla de Login -->
     <div id="login-screen" class="fixed inset-0 bg-blue-900 z-50 flex items-center justify-center transition-opacity duration-500">
         <div class="bg-white p-8 rounded-3xl shadow-2xl max-w-md w-full mx-4 text-center border-t-4 border-gold-500">
-            
-            <!-- Tu Logo Oficial en el Login -->
-            <img src="icono-192.png" alt="Logo Bendecida" class="w-28 h-28 mx-auto mb-4 rounded-full border-2 border-gold-500 shadow-md object-cover bg-white p-1">
-            
-            <h1 class="text-3xl font-serif font-semibold text-blue-950 mb-2">Contabilidad Bendecida</h1>
+            <img src="icono-192.png" alt="Logo Bendecida" class="w-24 h-24 md:w-28 md:h-28 mx-auto mb-4 rounded-full border-2 border-gold-500 shadow-md object-cover bg-white p-1">
+            <h1 class="text-2xl md:text-3xl font-serif font-semibold text-blue-950 mb-2">Contabilidad Bendecida</h1>
             <p class="text-gray-500 mb-8 text-sm">"El prudente ve el peligro y lo evita..." - Proverbios 22:3</p>
             
-            <div class="space-y-5 text-left">
+            <div class="space-y-4 text-left">
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Correo Electrónico</label>
                     <input type="email" id="email-login" class="w-full rounded-xl border-gray-200 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 p-3 border bg-gray-50">
@@ -54,7 +52,7 @@
                     <label class="block text-sm font-medium text-gray-700 mb-1">Contraseña</label>
                     <input type="password" id="password-login" class="w-full rounded-xl border-gray-200 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 p-3 border bg-gray-50">
                 </div>
-                <button onclick="window.iniciarSesion()" class="w-full bg-blue-900 hover:bg-blue-800 text-white font-bold py-3 px-4 rounded-xl shadow-md transition duration-300">
+                <button onclick="window.iniciarSesion()" class="w-full bg-blue-900 hover:bg-blue-800 text-white font-bold py-3 px-4 rounded-xl shadow-md transition duration-300 mt-2">
                     Ingresar a la Bóveda
                 </button>
                 <p id="login-error" class="text-red-500 text-sm mt-2 hidden text-center font-bold"></p>
@@ -65,72 +63,77 @@
     <!-- App Principal -->
     <div id="app-container" class="flex flex-col h-full hidden">
         
-        <!-- Cabecera -->
-        <header class="bg-blue-950 text-white shadow-lg z-10">
+        <!-- Cabecera Optimizada para Celulares -->
+        <header class="bg-blue-950 text-white shadow-lg z-10 flex-shrink-0">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="flex justify-between items-center h-16">
-                    <div class="flex items-center">
-                        <!-- Tu Logo Oficial en el Menú Superior -->
-                        <img src="icono-192.png" alt="Logo" class="w-10 h-10 mr-3 rounded-full border-2 border-gold-400 bg-white object-cover">
-                        <span class="font-serif text-xl font-semibold tracking-wide">Contabilidad Bendecida</span>
+                    <!-- Sección Izquierda: Logo y Título (Truncado en celulares pequeños) -->
+                    <div class="flex items-center space-x-2 md:space-x-3 overflow-hidden pr-2">
+                        <img src="icono-192.png" alt="Logo" class="w-9 h-9 md:w-10 md:h-10 rounded-full border border-gold-400 bg-white object-cover flex-shrink-0">
+                        <span class="font-serif text-lg md:text-xl font-semibold truncate">Contabilidad Bendecida</span>
                     </div>
-                    <button onclick="window.cerrarSesion()" class="text-sm bg-blue-900 px-3 py-1.5 rounded-lg border border-blue-800 hover:bg-blue-800 transition">
-                        <i class="fas fa-sign-out-alt"></i> Salir
+                    <!-- Sección Derecha: Botón Salir (Solo ícono en celular) -->
+                    <button onclick="window.cerrarSesion()" class="flex-shrink-0 text-sm bg-blue-900 p-2 md:px-3 md:py-1.5 rounded-lg border border-blue-800 hover:bg-blue-800 transition text-blue-100 hover:text-white">
+                        <i class="fas fa-sign-out-alt"></i> <span class="hidden md:inline ml-1">Salir</span>
                     </button>
                 </div>
             </div>
             
-            <div class="bg-blue-900 border-b border-gold-500/20 text-center py-2 px-4 shadow-inner">
-                <p id="versiculo-diario-texto" class="text-sm font-serif italic text-gold-400">Cargando palabra...</p>
+            <div class="bg-blue-900 border-b border-gold-500/20 text-center py-1.5 px-4 shadow-inner">
+                <p id="versiculo-diario-texto" class="text-xs md:text-sm font-serif italic text-gold-400 truncate">Cargando palabra...</p>
             </div>
 
             <!-- Navegación Escritorio -->
             <nav class="hidden md:flex overflow-x-auto justify-center bg-blue-950 px-4 pt-2">
                 <div class="flex space-x-2">
                     <button onclick="nav('dashboard')" id="nav-dashboard" class="nav-btn nav-active px-5 py-3 text-sm font-medium text-blue-200 hover:text-white rounded-t-xl transition"><i class="fas fa-chart-pie mr-2"></i>Dashboard</button>
-                    <button onclick="nav('ingresos')" id="nav-ingresos" class="nav-btn px-5 py-3 text-sm font-medium text-blue-200 hover:text-white rounded-t-xl transition"><i class="fas fa-wallet mr-2"></i>Ingresos & Negocios</button>
-                    <button onclick="nav('gastos')" id="nav-gastos" class="nav-btn px-5 py-3 text-sm font-medium text-blue-200 hover:text-white rounded-t-xl transition"><i class="fas fa-shopping-cart mr-2"></i>Gastos & Categorías</button>
+                    <button onclick="nav('ingresos')" id="nav-ingresos" class="nav-btn px-5 py-3 text-sm font-medium text-blue-200 hover:text-white rounded-t-xl transition"><i class="fas fa-wallet mr-2"></i>Ingresos</button>
+                    <button onclick="nav('gastos')" id="nav-gastos" class="nav-btn px-5 py-3 text-sm font-medium text-blue-200 hover:text-white rounded-t-xl transition"><i class="fas fa-shopping-cart mr-2"></i>Gastos</button>
                     <button onclick="nav('vehiculos')" id="nav-vehiculos" class="nav-btn px-5 py-3 text-sm font-medium text-blue-200 hover:text-white rounded-t-xl transition"><i class="fas fa-car mr-2"></i>Vehículo</button>
-                    <button onclick="nav('consejero')" id="nav-consejero" class="nav-btn px-5 py-3 text-sm font-medium text-blue-200 hover:text-white rounded-t-xl transition"><i class="fas fa-comment-dots mr-2"></i>Consejero Bíblico</button>
+                    <button onclick="nav('consejero')" id="nav-consejero" class="nav-btn px-5 py-3 text-sm font-medium text-blue-200 hover:text-white rounded-t-xl transition"><i class="fas fa-comment-dots mr-2"></i>Consejero</button>
                 </div>
             </nav>
         </header>
 
         <!-- Área de Contenido -->
-        <main class="flex-1 overflow-y-auto p-4 md:p-8">
+        <main class="flex-1 overflow-y-auto p-4 md:p-8 relative">
             
             <!-- SECCIÓN: DASHBOARD -->
-            <div id="sec-dashboard" class="section-content fade-in max-w-6xl mx-auto">
-                <h2 class="text-2xl font-serif text-blue-950 font-bold mb-6">Resumen Financiero</h2>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-5 mb-8">
-                    <div class="bg-gradient-to-br from-blue-900 to-blue-950 text-white rounded-2xl p-6 shadow-lg relative overflow-hidden border border-blue-800">
-                        <div class="absolute top-0 right-0 -mr-4 -mt-4 text-blue-800 opacity-50"><i class="fas fa-wallet text-7xl"></i></div>
-                        <h3 class="text-blue-200 font-medium text-sm">Saldo Total Disponible</h3>
-                        <p id="dash-balance" class="text-4xl font-bold mt-2 text-white">R$ 0.00</p>
+            <div id="sec-dashboard" class="section-content fade-in max-w-6xl mx-auto pb-6">
+                <div class="flex justify-between items-end mb-4 md:mb-6">
+                    <h2 class="text-xl md:text-2xl font-serif text-blue-950 font-bold">Resumen Financiero</h2>
+                    <span id="mes-actual-label" class="bg-blue-100 text-blue-800 text-xs font-bold px-2 py-1 rounded-md">Mes Actual</span>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-5 mb-6 md:mb-8">
+                    <div class="bg-gradient-to-br from-blue-900 to-blue-950 text-white rounded-2xl p-5 md:p-6 shadow-lg relative overflow-hidden border border-blue-800">
+                        <div class="absolute top-0 right-0 -mr-4 -mt-4 text-blue-800 opacity-50"><i class="fas fa-wallet text-6xl md:text-7xl"></i></div>
+                        <h3 class="text-blue-200 font-medium text-xs md:text-sm">Saldo Total Histórico</h3>
+                        <p id="dash-balance" class="text-3xl md:text-4xl font-bold mt-1 md:mt-2 text-white">R$ 0.00</p>
                     </div>
-                    <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-                        <h3 class="text-gray-500 font-medium text-sm">Ingresos (Sueldos y Negocios)</h3>
-                        <p id="dash-ingresos" class="text-2xl font-bold text-blue-600 mt-2">R$ 0.00</p>
+                    <div class="bg-white rounded-2xl p-5 md:p-6 shadow-sm border border-gray-100">
+                        <h3 class="text-gray-500 font-medium text-xs md:text-sm">Ingresos del Mes</h3>
+                        <p id="dash-ingresos-mes" class="text-2xl font-bold text-blue-600 mt-1 md:mt-2">R$ 0.00</p>
                     </div>
-                    <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-                        <h3 class="text-gray-500 font-medium text-sm">Gastos (Inc. Primicias y Auto)</h3>
-                        <p id="dash-gastos" class="text-2xl font-bold text-red-500 mt-2">R$ 0.00</p>
+                    <div class="bg-white rounded-2xl p-5 md:p-6 shadow-sm border border-gray-100">
+                        <h3 class="text-gray-500 font-medium text-xs md:text-sm">Gastos del Mes</h3>
+                        <p id="dash-gastos-mes" class="text-2xl font-bold text-red-500 mt-1 md:mt-2">R$ 0.00</p>
                     </div>
                 </div>
 
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    <div class="bg-white rounded-2xl shadow-sm border-t-4 border-gold-500 p-6">
-                        <h3 class="text-lg font-bold text-blue-950 mb-4 border-b pb-2"><i class="fas fa-gift text-gold-500 mr-2"></i>Primicias (Diezmos/Ofrendas)</h3>
-                        <div class="flex justify-between items-center mb-4">
-                            <span class="text-gray-600 text-sm">Meta sugerida (10% de Ingresos):</span>
-                            <span id="dash-diezmo-rec" class="font-bold text-blue-800">R$ 0.00</span>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
+                    <div class="bg-white rounded-2xl shadow-sm border-t-4 border-gold-500 p-5 md:p-6">
+                        <h3 class="text-lg font-bold text-blue-950 mb-4 border-b pb-2"><i class="fas fa-gift text-gold-500 mr-2"></i>Primicias del Mes</h3>
+                        <div class="flex justify-between items-center mb-3">
+                            <span class="text-gray-600 text-xs md:text-sm">Meta sugerida (10% Ingresos):</span>
+                            <span id="dash-diezmo-rec" class="font-bold text-blue-800 text-sm">R$ 0.00</span>
                         </div>
-                        <div class="flex justify-between items-center bg-blue-50 p-4 rounded-xl border border-blue-100">
-                            <span class="text-blue-950 font-medium">Primicias dadas este mes:</span>
-                            <span id="dash-diezmo-dado" class="font-bold text-gold-600 text-lg">R$ 0.00</span>
+                        <div class="flex justify-between items-center bg-blue-50 p-3 md:p-4 rounded-xl border border-blue-100">
+                            <span class="text-blue-950 font-medium text-sm">Entregado este mes:</span>
+                            <span id="dash-diezmo-dado" class="font-bold text-gold-600 text-base md:text-lg">R$ 0.00</span>
                         </div>
                     </div>
-                    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+                    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 md:p-6">
                         <h3 class="text-lg font-bold text-blue-950 mb-4 border-b pb-2"><i class="fas fa-history text-blue-500 mr-2"></i>Últimos Movimientos</h3>
                         <ul id="dash-movimientos" class="space-y-3"></ul>
                     </div>
@@ -138,128 +141,122 @@
             </div>
 
             <!-- SECCIÓN: INGRESOS & NEGOCIOS -->
-            <div id="sec-ingresos" class="section-content hidden fade-in max-w-6xl mx-auto">
-                <h2 class="text-2xl font-serif text-blue-950 font-bold mb-6">Fuentes de Ingreso</h2>
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div id="sec-ingresos" class="section-content hidden fade-in max-w-6xl mx-auto pb-6">
+                <h2 class="text-xl md:text-2xl font-serif text-blue-950 font-bold mb-4 md:mb-6">Fuentes de Ingreso</h2>
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6">
                     
-                    <!-- Sueldos e Ingresos Fijos -->
-                    <div class="bg-white rounded-2xl shadow-sm border-t-4 border-blue-600 p-6">
-                        <h3 class="text-xl font-bold text-gray-800 mb-2"><i class="fas fa-briefcase text-blue-600 mr-2"></i>Ingresos Fijos</h3>
-                        <p class="text-xs text-gray-500 mb-4">Ej: Sueldo de policía, rentas.</p>
-                        <input type="text" id="fijo-desc" class="w-full mb-3 rounded-xl bg-gray-50 p-3 border-gray-200 border" placeholder="Descripción (Ej. Sueldo Policía)">
-                        <input type="number" id="fijo-monto" class="w-full mb-4 rounded-xl bg-gray-50 p-3 border-gray-200 border" placeholder="Monto Total (R$)">
-                        <button onclick="registrarIngresoFijo()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl transition shadow-md">Registrar Sueldo/Ingreso</button>
+                    <div class="bg-white rounded-2xl shadow-sm border-t-4 border-blue-600 p-5 md:p-6">
+                        <h3 class="text-lg md:text-xl font-bold text-gray-800 mb-1"><i class="fas fa-briefcase text-blue-600 mr-2"></i>Sueldos / Fijos</h3>
+                        <p class="text-xs text-gray-500 mb-4">Ingresa tu sueldo o renta.</p>
+                        <input type="text" id="fijo-desc" class="w-full mb-3 rounded-xl bg-gray-50 p-3 border-gray-200 border text-sm" placeholder="Descripción (Ej. Sueldo Policía)">
+                        <input type="number" id="fijo-monto" class="w-full mb-4 rounded-xl bg-gray-50 p-3 border-gray-200 border text-sm" placeholder="Monto Total (R$)">
+                        <button onclick="registrarIngresoFijo()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl transition shadow-md text-sm">Registrar Sueldo</button>
                     </div>
 
-                    <!-- Clínica -->
-                    <div class="bg-white rounded-2xl shadow-sm border-t-4 border-teal-500 p-6">
-                        <h3 class="text-xl font-bold text-gray-800 mb-2"><i class="fas fa-spa text-teal-500 mr-2"></i>Clínica Estética</h3>
+                    <div class="bg-white rounded-2xl shadow-sm border-t-4 border-teal-500 p-5 md:p-6">
+                        <h3 class="text-lg md:text-xl font-bold text-gray-800 mb-1"><i class="fas fa-spa text-teal-500 mr-2"></i>Clínica Estética</h3>
                         <p class="text-xs text-gray-500 mb-4">Balance de servicios e insumos.</p>
-                        <input type="number" id="clinica-ingreso" class="w-full mb-3 rounded-xl bg-gray-50 p-3 border-gray-200 border" placeholder="Ingresos por Servicios">
-                        <input type="number" id="clinica-mercaderia" class="w-full mb-3 rounded-xl bg-gray-50 p-3 border-gray-200 border" placeholder="Inversión Insumos">
-                        <input type="number" id="clinica-gastos" class="w-full mb-4 rounded-xl bg-gray-50 p-3 border-gray-200 border" placeholder="Otros Gastos">
-                        <button onclick="registrarNegocio('clinica')" class="w-full bg-teal-600 hover:bg-teal-700 text-white font-bold py-3 rounded-xl transition shadow-md">Registrar Clínica</button>
+                        <input type="number" id="clinica-ingreso" class="w-full mb-3 rounded-xl bg-gray-50 p-3 border-gray-200 border text-sm" placeholder="Ingresos por Servicios">
+                        <input type="number" id="clinica-mercaderia" class="w-full mb-3 rounded-xl bg-gray-50 p-3 border-gray-200 border text-sm" placeholder="Inversión Insumos">
+                        <input type="number" id="clinica-gastos" class="w-full mb-4 rounded-xl bg-gray-50 p-3 border-gray-200 border text-sm" placeholder="Otros Gastos">
+                        <button onclick="registrarNegocio('clinica')" class="w-full bg-teal-600 hover:bg-teal-700 text-white font-bold py-3 rounded-xl transition shadow-md text-sm">Registrar Clínica</button>
                     </div>
 
-                    <!-- Luna Fem -->
-                    <div class="bg-white rounded-2xl shadow-sm border-t-4 border-pink-500 p-6">
-                        <h3 class="text-xl font-bold text-gray-800 mb-2"><i class="fas fa-tshirt text-pink-500 mr-2"></i>Luna Fem Brasil</h3>
+                    <div class="bg-white rounded-2xl shadow-sm border-t-4 border-pink-500 p-5 md:p-6">
+                        <h3 class="text-lg md:text-xl font-bold text-gray-800 mb-1"><i class="fas fa-tshirt text-pink-500 mr-2"></i>Luna Fem Brasil</h3>
                         <p class="text-xs text-gray-500 mb-4">Balance de ventas y mercadería.</p>
-                        <input type="number" id="luna-ingreso" class="w-full mb-3 rounded-xl bg-gray-50 p-3 border-gray-200 border" placeholder="Ingresos por Ventas">
-                        <input type="number" id="luna-mercaderia" class="w-full mb-3 rounded-xl bg-gray-50 p-3 border-gray-200 border" placeholder="Inversión Mercadería">
-                        <input type="number" id="luna-gastos" class="w-full mb-4 rounded-xl bg-gray-50 p-3 border-gray-200 border" placeholder="Alquiler / Otros">
-                        <button onclick="registrarNegocio('luna')" class="w-full bg-pink-600 hover:bg-pink-700 text-white font-bold py-3 rounded-xl transition shadow-md">Registrar Luna Fem</button>
+                        <input type="number" id="luna-ingreso" class="w-full mb-3 rounded-xl bg-gray-50 p-3 border-gray-200 border text-sm" placeholder="Ingresos por Ventas">
+                        <input type="number" id="luna-mercaderia" class="w-full mb-3 rounded-xl bg-gray-50 p-3 border-gray-200 border text-sm" placeholder="Inversión Mercadería">
+                        <input type="number" id="luna-gastos" class="w-full mb-4 rounded-xl bg-gray-50 p-3 border-gray-200 border text-sm" placeholder="Alquiler / Otros">
+                        <button onclick="registrarNegocio('luna')" class="w-full bg-pink-600 hover:bg-pink-700 text-white font-bold py-3 rounded-xl transition shadow-md text-sm">Registrar Luna Fem</button>
                     </div>
                 </div>
             </div>
 
             <!-- SECCIÓN: GASTOS Y CATEGORÍAS -->
-            <div id="sec-gastos" class="section-content hidden fade-in max-w-5xl mx-auto">
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    
-                    <!-- Registrar Gasto -->
+            <div id="sec-gastos" class="section-content hidden fade-in max-w-5xl mx-auto pb-6">
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6">
                     <div class="lg:col-span-2">
-                        <h2 class="text-2xl font-serif text-blue-950 font-bold mb-6">Gastos Familiares</h2>
-                        <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm mb-6">
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <input type="text" id="gasto-desc" class="p-3 border border-gray-200 bg-gray-50 rounded-xl w-full md:col-span-2" placeholder="Descripción (Ej. Panadería, Luz)">
-                                <select id="gasto-categoria" class="p-3 border border-gray-200 bg-gray-50 rounded-xl w-full">
-                                    <option value="Primicias">🎁 Primicias / Ofrendas</option>
-                                </select>
-                                <input type="number" id="gasto-monto" class="p-3 border border-gray-200 bg-gray-50 rounded-xl w-full" placeholder="Monto (R$)">
-                                <button onclick="guardarGastoFamiliar()" class="md:col-span-2 bg-blue-900 hover:bg-blue-950 text-white font-bold py-3 rounded-xl shadow-md transition mt-2">Registrar Gasto</button>
+                        <h2 class="text-xl md:text-2xl font-serif text-blue-950 font-bold mb-4 md:mb-6">Gastos Familiares</h2>
+                        <div class="bg-white p-5 md:p-6 rounded-2xl border border-gray-100 shadow-sm mb-4 md:mb-6">
+                            <div class="grid grid-cols-1 gap-3">
+                                <input type="text" id="gasto-desc" class="p-3 border border-gray-200 bg-gray-50 rounded-xl w-full text-sm" placeholder="Descripción (Ej. Panadería, Luz)">
+                                <div class="grid grid-cols-2 gap-3">
+                                    <select id="gasto-categoria" class="p-3 border border-gray-200 bg-gray-50 rounded-xl w-full text-sm">
+                                        <option value="Primicias">🎁 Primicias</option>
+                                    </select>
+                                    <input type="number" id="gasto-monto" class="p-3 border border-gray-200 bg-gray-50 rounded-xl w-full text-sm" placeholder="Monto (R$)">
+                                </div>
+                                <button onclick="guardarGastoFamiliar()" class="w-full bg-blue-900 hover:bg-blue-950 text-white font-bold py-3 rounded-xl shadow-md transition mt-1 text-sm">Registrar Gasto</button>
                             </div>
                         </div>
 
-                        <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
-                            <h3 class="font-bold text-gray-800 border-b pb-2 mb-4">Desglose Mensual</h3>
+                        <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 md:p-5">
+                            <h3 class="font-bold text-gray-800 border-b pb-2 mb-3 text-sm md:text-base">Desglose del Mes Actual</h3>
                             <ul id="lista-desglose-gastos" class="divide-y divide-gray-100"></ul>
                         </div>
                     </div>
 
-                    <!-- Administrar Categorías -->
-                    <div class="lg:col-span-1">
-                        <h2 class="text-2xl font-serif text-blue-950 font-bold mb-6">Configuración</h2>
-                        <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
-                            <h3 class="font-bold text-gray-800 mb-4"><i class="fas fa-tags text-blue-500 mr-2"></i>Tus Categorías</h3>
-                            <div class="flex gap-2 mb-5">
-                                <input type="text" id="nueva-categoria" class="flex-1 rounded-xl p-3 border border-gray-200 bg-gray-50 text-sm" placeholder="Añadir nueva...">
+                    <div class="lg:col-span-1 mt-2 md:mt-0">
+                        <h2 class="text-xl md:text-2xl font-serif text-blue-950 font-bold mb-4 md:mb-6">Categorías</h2>
+                        <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 md:p-6">
+                            <h3 class="font-bold text-gray-800 mb-3 text-sm md:text-base"><i class="fas fa-tags text-blue-500 mr-2"></i>Personalizar</h3>
+                            <div class="flex gap-2 mb-4">
+                                <input type="text" id="nueva-categoria" class="flex-1 rounded-xl p-3 border border-gray-200 bg-gray-50 text-sm" placeholder="Nueva categoría...">
                                 <button onclick="window.agregarCategoria()" class="bg-blue-600 text-white px-4 rounded-xl shadow hover:bg-blue-700 transition"><i class="fas fa-plus"></i></button>
                             </div>
-                            <ul id="lista-categorias-admin" class="space-y-2 max-h-60 overflow-y-auto pr-2">
-                            </ul>
+                            <ul id="lista-categorias-admin" class="space-y-2 max-h-48 overflow-y-auto pr-2"></ul>
                         </div>
                     </div>
                 </div>
             </div>
 
             <!-- SECCIÓN: VEHÍCULOS -->
-            <div id="sec-vehiculos" class="section-content hidden fade-in max-w-5xl mx-auto">
-                <h2 class="text-2xl font-serif text-blue-950 font-bold mb-6">Control Vehicular</h2>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div class="md:col-span-1 bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
-                        <h3 class="font-bold mb-4 border-b pb-2 text-gray-800"><i class="fas fa-gas-pump text-blue-500 mr-2"></i>Registrar Combustible</h3>
-                        <label class="block text-xs font-medium text-gray-500 mb-1 mt-3">Monto de carga</label>
-                        <input type="number" id="vehiculo-costo" class="w-full mb-3 p-3 border border-gray-200 bg-gray-50 rounded-xl" placeholder="Ej. 150 (R$)">
-                        <label class="block text-xs font-medium text-gray-500 mb-1">Kilometraje Actual del Tablero</label>
-                        <input type="number" id="vehiculo-km" class="w-full mb-5 p-3 border border-gray-200 bg-gray-50 rounded-xl" placeholder="Ej. 135075">
-                        <button onclick="registrarCarga()" class="w-full bg-blue-900 hover:bg-blue-950 text-white font-bold py-3 rounded-xl shadow-md transition">Guardar Registro</button>
+            <div id="sec-vehiculos" class="section-content hidden fade-in max-w-5xl mx-auto pb-6">
+                <h2 class="text-xl md:text-2xl font-serif text-blue-950 font-bold mb-4 md:mb-6">Control Vehicular</h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
+                    <div class="md:col-span-1 bg-white rounded-2xl p-5 md:p-6 border border-gray-100 shadow-sm">
+                        <h3 class="font-bold mb-3 border-b pb-2 text-gray-800 text-sm md:text-base"><i class="fas fa-gas-pump text-blue-500 mr-2"></i>Registrar Carga</h3>
+                        <label class="block text-xs font-medium text-gray-500 mb-1 mt-2">Monto de carga</label>
+                        <input type="number" id="vehiculo-costo" class="w-full mb-3 p-3 border border-gray-200 bg-gray-50 rounded-xl text-sm" placeholder="Ej. 150 (R$)">
+                        <label class="block text-xs font-medium text-gray-500 mb-1">Kilometraje del Tablero</label>
+                        <input type="number" id="vehiculo-km" class="w-full mb-4 p-3 border border-gray-200 bg-gray-50 rounded-xl text-sm" placeholder="Ej. 135075">
+                        <button onclick="registrarCarga()" class="w-full bg-blue-900 hover:bg-blue-950 text-white font-bold py-3 rounded-xl shadow-md transition text-sm">Guardar Registro</button>
                     </div>
-                    <div class="md:col-span-2 bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
-                        <h3 class="font-bold mb-4 border-b pb-2 text-gray-800">Eficiencia Inteligente</h3>
-                        <div class="grid grid-cols-2 gap-4 mb-4">
-                            <div class="bg-blue-50 p-5 rounded-xl text-center border border-blue-100">
-                                <p class="text-xs text-blue-600 font-bold uppercase tracking-wide">Costo Total</p>
-                                <p id="vehiculo-total-costo" class="text-3xl font-bold text-blue-950 mt-1">R$ 0.00</p>
+                    <div class="md:col-span-2 bg-white rounded-2xl p-5 md:p-6 border border-gray-100 shadow-sm flex flex-col justify-center">
+                        <h3 class="font-bold mb-4 border-b pb-2 text-gray-800 text-sm md:text-base">Eficiencia Histórica</h3>
+                        <div class="grid grid-cols-2 gap-3 md:gap-4 mb-2">
+                            <div class="bg-blue-50 p-4 md:p-5 rounded-xl text-center border border-blue-100">
+                                <p class="text-[10px] md:text-xs text-blue-600 font-bold uppercase tracking-wide">Costo Total</p>
+                                <p id="vehiculo-total-costo" class="text-xl md:text-3xl font-bold text-blue-950 mt-1">R$ 0.00</p>
                             </div>
-                            <div class="bg-blue-50 p-5 rounded-xl text-center border border-blue-100">
-                                <p class="text-xs text-blue-600 font-bold uppercase tracking-wide">Costo Promedio</p>
-                                <p id="vehiculo-eficiencia" class="text-3xl font-bold text-blue-950 mt-1">0.00 R$/km</p>
+                            <div class="bg-blue-50 p-4 md:p-5 rounded-xl text-center border border-blue-100">
+                                <p class="text-[10px] md:text-xs text-blue-600 font-bold uppercase tracking-wide">Costo / Km</p>
+                                <p id="vehiculo-eficiencia" class="text-xl md:text-3xl font-bold text-blue-950 mt-1">0.00 R$</p>
                             </div>
                         </div>
-                        <p class="text-xs text-gray-400 text-center mt-4"><i class="fas fa-info-circle"></i> La app calcula automáticamente los kilómetros recorridos restando la última lectura de la inicial.</p>
                     </div>
                 </div>
             </div>
 
             <!-- SECCIÓN: CONSEJERO -->
-            <div id="sec-consejero" class="section-content hidden fade-in max-w-4xl mx-auto">
-                <div class="bg-white rounded-3xl shadow-xl border border-gold-500/30 overflow-hidden">
-                    <div class="bg-gradient-to-r from-blue-950 to-blue-900 p-6 text-white flex justify-between items-center">
+            <div id="sec-consejero" class="section-content hidden fade-in max-w-4xl mx-auto pb-6">
+                <div class="bg-white rounded-3xl shadow-xl border border-gold-500/30 overflow-hidden flex flex-col h-[calc(100vh-220px)] md:h-[500px]">
+                    <div class="bg-gradient-to-r from-blue-950 to-blue-900 p-4 md:p-6 text-white flex justify-between items-center flex-shrink-0">
                         <div>
-                            <h2 class="text-2xl font-serif font-bold"><i class="fas fa-scroll text-gold-400 mr-2"></i> Consejero Bíblico</h2>
-                            <p class="text-xs text-blue-200 mt-1">Mentoría financiera con enfoque pastoral e IA</p>
+                            <h2 class="text-xl md:text-2xl font-serif font-bold"><i class="fas fa-scroll text-gold-400 mr-2"></i> Consejero Bíblico</h2>
+                            <p class="text-xs text-blue-200 mt-1">Sabiduría para el mes en curso</p>
                         </div>
-                        <i class="fas fa-praying-hands text-4xl text-gold-400 opacity-80"></i>
+                        <i class="fas fa-praying-hands text-3xl md:text-4xl text-gold-400 opacity-80"></i>
                     </div>
-                    <div id="chat-box" class="p-6 h-[400px] overflow-y-auto bg-gray-50 space-y-4">
-                        <div class="bg-blue-100 text-blue-950 rounded-2xl rounded-tl-none px-5 py-4 max-w-[85%] text-sm shadow-sm border border-blue-200">
-                            ¡Hola! Analizaré tus sueldos, el desempeño de los negocios y los gastos de la familia pasándolos por el filtro de la Palabra de Dios. Haz clic abajo cuando desees un consejo.
+                    <div id="chat-box" class="p-4 md:p-6 flex-1 overflow-y-auto bg-gray-50 space-y-4">
+                        <div class="bg-blue-100 text-blue-950 rounded-2xl rounded-tl-none px-4 md:px-5 py-3 md:py-4 max-w-[90%] md:max-w-[85%] text-sm shadow-sm border border-blue-200">
+                            ¡Hola! Analizaré tus ingresos y gastos del <strong>mes actual</strong> a la luz de la Palabra de Dios. Haz clic abajo cuando desees un consejo.
                         </div>
                     </div>
-                    <div class="p-5 border-t bg-white">
-                        <button onclick="pedirConsejoIA()" id="btn-consejo" class="w-full bg-gold-500 hover:bg-gold-600 text-white font-bold py-4 rounded-2xl shadow-lg transition">
-                            <i class="fas fa-lightbulb mr-2"></i> Evaluar Finanzas Actuales
+                    <div class="p-4 border-t bg-white flex-shrink-0">
+                        <button onclick="pedirConsejoIA()" id="btn-consejo" class="w-full bg-gold-500 hover:bg-gold-600 text-white font-bold py-3 md:py-4 rounded-xl md:rounded-2xl shadow-lg transition text-sm md:text-base">
+                            <i class="fas fa-lightbulb mr-2"></i> Evaluar Finanzas del Mes
                         </button>
                     </div>
                 </div>
@@ -267,20 +264,20 @@
 
         </main>
 
-        <!-- Navegación Móvil -->
-        <nav class="md:hidden bg-white border-t border-gray-200 pb-safe shadow-[0_-5px_15px_rgba(0,0,0,0.05)]">
+        <!-- Navegación Móvil (Footer) -->
+        <nav class="md:hidden bg-white border-t border-gray-200 pb-safe shadow-[0_-5px_15px_rgba(0,0,0,0.05)] flex-shrink-0 z-20">
             <div class="flex justify-around">
-                <button onclick="nav('dashboard')" class="flex-1 py-3 text-center text-gray-400 hover:text-blue-900"><i class="fas fa-chart-pie block mb-1 text-lg"></i><span class="text-[10px] font-medium">Inicio</span></button>
-                <button onclick="nav('ingresos')" class="flex-1 py-3 text-center text-gray-400 hover:text-blue-900"><i class="fas fa-briefcase block mb-1 text-lg"></i><span class="text-[10px] font-medium">Ingresos</span></button>
-                <button onclick="nav('gastos')" class="flex-1 py-3 text-center text-gray-400 hover:text-blue-900"><i class="fas fa-tags block mb-1 text-lg"></i><span class="text-[10px] font-medium">Gastos</span></button>
-                <button onclick="nav('vehiculos')" class="flex-1 py-3 text-center text-gray-400 hover:text-blue-900"><i class="fas fa-car block mb-1 text-lg"></i><span class="text-[10px] font-medium">Auto</span></button>
-                <button onclick="nav('consejero')" class="flex-1 py-3 text-center text-gold-500 font-bold"><i class="fas fa-dove block mb-1 text-lg"></i><span class="text-[10px]">Consejo</span></button>
+                <button onclick="nav('dashboard')" class="nav-btn-mobile text-blue-900 flex-1 py-2 text-center hover:text-blue-900 transition"><i class="fas fa-chart-pie block mb-1 text-lg"></i><span class="text-[10px] font-medium">Inicio</span></button>
+                <button onclick="nav('ingresos')" class="nav-btn-mobile text-gray-400 flex-1 py-2 text-center hover:text-blue-900 transition"><i class="fas fa-briefcase block mb-1 text-lg"></i><span class="text-[10px] font-medium">Ingresos</span></button>
+                <button onclick="nav('gastos')" class="nav-btn-mobile text-gray-400 flex-1 py-2 text-center hover:text-blue-900 transition"><i class="fas fa-tags block mb-1 text-lg"></i><span class="text-[10px] font-medium">Gastos</span></button>
+                <button onclick="nav('vehiculos')" class="nav-btn-mobile text-gray-400 flex-1 py-2 text-center hover:text-blue-900 transition"><i class="fas fa-car block mb-1 text-lg"></i><span class="text-[10px] font-medium">Auto</span></button>
+                <button onclick="nav('consejero')" class="nav-btn-mobile text-gold-500 flex-1 py-2 text-center transition"><i class="fas fa-dove block mb-1 text-lg"></i><span class="text-[10px] font-bold">Consejo</span></button>
             </div>
         </nav>
     </div>
 
     <!-- Tostadas/Notificaciones -->
-    <div id="toast-container" class="fixed bottom-24 right-4 md:bottom-6 md:right-6 z-50 flex flex-col space-y-2"></div>
+    <div id="toast-container" class="fixed bottom-24 right-4 md:bottom-6 md:right-6 z-50 flex flex-col space-y-2 pointer-events-none"></div>
 
     <script type="module" src="./app.js"></script>
 
@@ -289,15 +286,30 @@
             document.querySelectorAll('.section-content').forEach(el => el.classList.add('hidden'));
             document.getElementById(`sec-${sectionId}`).classList.remove('hidden');
             
+            // Navegación PC
             document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('bg-blue-900', 'text-white'));
             const activeBtn = document.getElementById(`nav-${sectionId}`);
             if(activeBtn) activeBtn.classList.add('bg-blue-900', 'text-white');
+
+            // Navegación Móvil
+            document.querySelectorAll('.nav-btn-mobile').forEach(el => {
+                if(!el.classList.contains('text-gold-500')) {
+                    el.classList.remove('text-blue-900');
+                    el.classList.add('text-gray-400');
+                }
+            });
+            const allMobileBtns = document.querySelectorAll('.nav-btn-mobile');
+            let index = ['dashboard', 'ingresos', 'gastos', 'vehiculos', 'consejero'].indexOf(sectionId);
+            if(index !== -1 && index !== 4) { // Si no es el consejero (que es dorado)
+                allMobileBtns[index].classList.remove('text-gray-400');
+                allMobileBtns[index].classList.add('text-blue-900');
+            }
         }
         
         window.showToast = (message, type = 'success') => {
             const container = document.getElementById('toast-container');
             const toast = document.createElement('div');
-            toast.className = `px-5 py-3 rounded-xl text-white text-sm font-medium shadow-xl transition-all duration-300 translate-y-10 opacity-0 ${type === 'success' ? 'bg-blue-600' : 'bg-red-500'}`;
+            toast.className = `px-4 md:px-5 py-2 md:py-3 rounded-xl text-white text-xs md:text-sm font-medium shadow-xl transition-all duration-300 translate-y-10 opacity-0 pointer-events-auto ${type === 'success' ? 'bg-blue-600' : 'bg-red-500'}`;
             toast.innerHTML = `<i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-triangle'} mr-2"></i> ${message}`;
             container.appendChild(toast);
             setTimeout(() => toast.classList.remove('translate-y-10', 'opacity-0'), 10);
