@@ -6,15 +6,24 @@ const transaccionesRef = collection(db, "transacciones");
 const categoriasRef = collection(db, "categorias");
 
 let estadoActual = {
-    saldo: 0,
-    ingresosNetos: 0,
-    gastosTotales: 0,
-    gastosPorCategoria: {},
-    primiciasDadas: 0,
-    vehiculo: { costoTotal: 0, odoMin: null, odoMax: null },
+    saldoHistorico: 0,
+    ingresosMes: 0,
+    gastosMes: 0,
+    primiciasMes: 0,
+    gastosPorCategoriaMes: {},
+    vehiculo: { costoTotalHistorico: 0, odoMin: null, odoMax: null },
     historial: [],
-    categoriasList: [] // Aquí vivirá tu lista dinámica de categorías
+    categoriasList: []
 };
+
+// Establecer nombre del mes actual en la interfaz
+const meses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+const fechaActual = new Date();
+const mesActualTxt = meses[fechaActual.getMonth()];
+document.addEventListener("DOMContentLoaded", () => {
+    const labelMes = document.getElementById('mes-actual-label');
+    if(labelMes) labelMes.innerText = `Mes de ${mesActualTxt}`;
+});
 
 // ==========================================
 // SEGURIDAD Y SESIÓN
@@ -59,57 +68,46 @@ async function guardarTransaccion(tipo, monto, categoria, detalle) {
     }
 }
 
-// 1. Sueldos Fijos
 window.registrarIngresoFijo = () => {
     const desc = document.getElementById('fijo-desc').value;
     const monto = parseFloat(document.getElementById('fijo-monto').value);
     if(desc && monto) guardarTransaccion('ingreso_fijo', monto, 'Sueldo', desc);
-    document.getElementById('fijo-desc').value = '';
-    document.getElementById('fijo-monto').value = '';
+    document.getElementById('fijo-desc').value = ''; document.getElementById('fijo-monto').value = '';
 };
 
-// 2. Negocios (Luna Fem y Clínica)
 window.registrarNegocio = (negocio) => {
     const ing = parseFloat(document.getElementById(`${negocio}-ingreso`).value) || 0;
     const merc = parseFloat(document.getElementById(`${negocio}-mercaderia`).value) || 0;
     const gas = parseFloat(document.getElementById(`${negocio}-gastos`).value) || 0;
     const ganancia = ing - (merc + gas);
-    
     if(ganancia !== 0) guardarTransaccion('negocio', ganancia, negocio, `Ganancia neta ${negocio}`);
-    document.getElementById(`${negocio}-ingreso`).value = '';
-    document.getElementById(`${negocio}-mercaderia`).value = '';
-    document.getElementById(`${negocio}-gastos`).value = '';
+    document.getElementById(`${negocio}-ingreso`).value = ''; document.getElementById(`${negocio}-mercaderia`).value = ''; document.getElementById(`${negocio}-gastos`).value = '';
 };
 
-// 3. Vehículos
 window.registrarCarga = () => {
     const costo = parseFloat(document.getElementById('vehiculo-costo').value);
-    const km = parseFloat(document.getElementById('vehiculo-km').value); // Odómetro total actual
+    const km = parseFloat(document.getElementById('vehiculo-km').value);
     if(km && costo) guardarTransaccion('vehiculo', costo, 'Combustible', km);
-    document.getElementById('vehiculo-costo').value = '';
-    document.getElementById('vehiculo-km').value = '';
+    document.getElementById('vehiculo-costo').value = ''; document.getElementById('vehiculo-km').value = '';
 };
 
-// 4. Gastos Familiares
 window.guardarGastoFamiliar = () => {
     const desc = document.getElementById('gasto-desc').value;
     const cat = document.getElementById('gasto-categoria').value;
     const monto = parseFloat(document.getElementById('gasto-monto').value);
     if(desc && monto) guardarTransaccion('gasto', monto, cat, desc);
-    document.getElementById('gasto-desc').value = '';
-    document.getElementById('gasto-monto').value = '';
+    document.getElementById('gasto-desc').value = ''; document.getElementById('gasto-monto').value = '';
 };
 
 // ==========================================
-// CONFIGURACIÓN DE CATEGORÍAS EN LA NUBE
+// CATEGORÍAS EN LA NUBE
 // ==========================================
 window.agregarCategoria = async () => {
     const input = document.getElementById('nueva-categoria');
     const nombre = input.value.trim();
     if (nombre) {
         await addDoc(categoriasRef, { nombre: nombre, fechaCreacion: serverTimestamp() });
-        input.value = '';
-        window.showToast("Categoría agregada");
+        input.value = ''; window.showToast("Categoría agregada");
     }
 };
 
@@ -117,26 +115,17 @@ window.eliminarCategoria = async (id) => {
     try {
         await deleteDoc(doc(db, "categorias", id));
         window.showToast("Categoría eliminada");
-    } catch (e) {
-        window.showToast("Error al eliminar", "error");
-    }
+    } catch (e) { window.showToast("Error al eliminar", "error"); }
 };
 
 function escucharCategorias() {
     onSnapshot(categoriasRef, (snapshot) => {
-        let catTemp = [{ id: 'primicias', nombre: 'Primicias' }]; // Inamovible
-        snapshot.forEach(doc => {
-            catTemp.push({ id: doc.id, nombre: doc.data().nombre });
-        });
+        let catTemp = [{ id: 'primicias', nombre: 'Primicias' }];
+        snapshot.forEach(doc => catTemp.push({ id: doc.id, nombre: doc.data().nombre }));
         estadoActual.categoriasList = catTemp;
         
-        // Actualizar el Dropdown del formulario
-        const selectCat = document.getElementById('gasto-categoria');
-        selectCat.innerHTML = catTemp.map(c => `<option value="${c.nombre}">${c.nombre === 'Primicias' ? '🎁 ' : ''}${c.nombre}</option>`).join('');
-        
-        // Actualizar el Panel de Administración (ocultando el botón borrar de Primicias)
-        const listaAdmin = document.getElementById('lista-categorias-admin');
-        listaAdmin.innerHTML = catTemp.map(c => `
+        document.getElementById('gasto-categoria').innerHTML = catTemp.map(c => `<option value="${c.nombre}">${c.nombre === 'Primicias' ? '🎁 ' : ''}${c.nombre}</option>`).join('');
+        document.getElementById('lista-categorias-admin').innerHTML = catTemp.map(c => `
             <li class="flex justify-between items-center bg-gray-50 p-2 rounded-lg border border-gray-100 text-sm">
                 <span class="text-gray-700">${c.nombre}</span>
                 ${c.id !== 'primicias' ? `<button onclick="eliminarCategoria('${c.id}')" class="text-red-400 hover:text-red-600 px-2"><i class="fas fa-times"></i></button>` : '<span class="text-gray-400 text-xs italic">Fija</span>'}
@@ -146,46 +135,65 @@ function escucharCategorias() {
 }
 
 // ==========================================
-// SINCRONIZACIÓN Y CÁLCULOS
+// SINCRONIZACIÓN Y CÁLCULOS (POR MES)
 // ==========================================
 function escucharBaseDeDatos() {
     const q = query(transaccionesRef, orderBy("fecha", "desc"));
     onSnapshot(q, (snapshot) => {
-        // Reiniciamos cálculos
-        estadoActual.saldo = 0; estadoActual.ingresosNetos = 0; estadoActual.gastosTotales = 0; 
-        estadoActual.primiciasDadas = 0; estadoActual.gastosPorCategoria = {}; estadoActual.historial = [];
-        estadoActual.vehiculo = { costoTotal: 0, odoMin: null, odoMax: null };
+        estadoActual.saldoHistorico = 0; estadoActual.ingresosMes = 0; estadoActual.gastosMes = 0; 
+        estadoActual.primiciasMes = 0; estadoActual.gastosPorCategoriaMes = {}; estadoActual.historial = [];
+        estadoActual.vehiculo = { costoTotalHistorico: 0, odoMin: null, odoMax: null };
+
+        const mesActualNum = new Date().getMonth();
+        const anoActualNum = new Date().getFullYear();
 
         snapshot.forEach((doc) => {
             const data = doc.data();
             
-            // Historial (Máximo 5 recientes)
-            if(estadoActual.historial.length < 5) {
+            // Determinar si la transacción es del mes en curso
+            let esEsteMes = false;
+            if (data.fecha) {
+                const dateData = data.fecha.toDate();
+                if (dateData.getMonth() === mesActualNum && dateData.getFullYear() === anoActualNum) {
+                    esEsteMes = true;
+                }
+            } else {
+                // Si la fecha es null (recién guardado, pendiente de sincronizar servidor) asumimos que es de este mes
+                esEsteMes = true;
+            }
+            
+            // Historial Visual (los últimos 6 movimientos sin importar el mes)
+            if(estadoActual.historial.length < 6) {
                 estadoActual.historial.push({ 
-                    desc: data.detalle || data.categoria, 
-                    monto: data.monto, 
+                    desc: data.detalle || data.categoria, monto: data.monto, 
                     esIngreso: (data.tipo === 'negocio' || data.tipo === 'ingreso_fijo') 
                 });
             }
 
-            if (data.tipo === 'negocio' || data.tipo === 'ingreso_fijo') {
-                estadoActual.ingresosNetos += data.monto;
-                estadoActual.saldo += data.monto;
-            }
-            if (data.tipo === 'gasto' || data.tipo === 'vehiculo') {
-                estadoActual.gastosTotales += data.monto;
-                estadoActual.saldo -= data.monto;
-            }
-            if (data.tipo === 'gasto') {
-                if(!estadoActual.gastosPorCategoria[data.categoria]) estadoActual.gastosPorCategoria[data.categoria] = 0;
-                estadoActual.gastosPorCategoria[data.categoria] += data.monto;
-                if(data.categoria === 'Primicias') estadoActual.primiciasDadas += data.monto;
-            }
+            // Cálculos Históricos (Totales de toda la vida)
+            if (data.tipo === 'negocio' || data.tipo === 'ingreso_fijo') estadoActual.saldoHistorico += data.monto;
+            if (data.tipo === 'gasto' || data.tipo === 'vehiculo') estadoActual.saldoHistorico -= data.monto;
+            
             if (data.tipo === 'vehiculo') {
-                estadoActual.vehiculo.costoTotal += data.monto;
+                estadoActual.vehiculo.costoTotalHistorico += data.monto;
                 const odo = Number(data.detalle);
                 if (estadoActual.vehiculo.odoMax === null) estadoActual.vehiculo.odoMax = odo;
-                estadoActual.vehiculo.odoMin = odo; // El odómetro mínimo se actualiza hasta llegar al registro más antiguo
+                estadoActual.vehiculo.odoMin = odo; 
+            }
+
+            // Cálculos DEL MES ACTUAL
+            if (esEsteMes) {
+                if (data.tipo === 'negocio' || data.tipo === 'ingreso_fijo') {
+                    estadoActual.ingresosMes += data.monto;
+                }
+                if (data.tipo === 'gasto' || data.tipo === 'vehiculo') {
+                    estadoActual.gastosMes += data.monto;
+                }
+                if (data.tipo === 'gasto') {
+                    if(!estadoActual.gastosPorCategoriaMes[data.categoria]) estadoActual.gastosPorCategoriaMes[data.categoria] = 0;
+                    estadoActual.gastosPorCategoriaMes[data.categoria] += data.monto;
+                    if(data.categoria === 'Primicias') estadoActual.primiciasMes += data.monto;
+                }
             }
         });
         actualizarInterfaz();
@@ -195,37 +203,43 @@ function escucharBaseDeDatos() {
 function actualizarInterfaz() {
     const format = (n) => `R$ ${n.toFixed(2)}`;
     
-    // Dashboard
-    document.getElementById('dash-balance').innerText = format(estadoActual.saldo);
-    document.getElementById('dash-ingresos').innerText = format(estadoActual.ingresosNetos);
-    document.getElementById('dash-gastos').innerText = format(estadoActual.gastosTotales);
-    document.getElementById('dash-diezmo-rec').innerText = format(estadoActual.ingresosNetos * 0.10);
-    document.getElementById('dash-diezmo-dado').innerText = format(estadoActual.primiciasDadas);
+    // Dashboard (Muestra Histórico vs Mensual)
+    document.getElementById('dash-balance').innerText = format(estadoActual.saldoHistorico);
+    document.getElementById('dash-ingresos-mes').innerText = format(estadoActual.ingresosMes);
+    document.getElementById('dash-gastos-mes').innerText = format(estadoActual.gastosMes);
+    document.getElementById('dash-diezmo-rec').innerText = format(estadoActual.ingresosMes * 0.10);
+    document.getElementById('dash-diezmo-dado').innerText = format(estadoActual.primiciasMes);
 
-    // Historial
+    // Historial (Últimos Movimientos)
     const histHtml = document.getElementById('dash-movimientos');
     histHtml.innerHTML = estadoActual.historial.length ? estadoActual.historial.map(h => `
-        <li class="flex justify-between py-2 border-b border-gray-50 last:border-0 text-sm">
-            <span class="text-gray-700 font-medium">${h.desc}</span>
-            <span class="font-bold ${h.esIngreso ? 'text-blue-600' : 'text-red-500'}">${h.esIngreso ? '+' : '-'}${format(h.monto)}</span>
-        </li>`).join('') : '<li class="text-gray-400 text-sm italic">Sin movimientos recientes</li>';
+        <li class="flex justify-between items-center py-2 border-b border-gray-50 last:border-0 text-sm">
+            <span class="text-gray-700 font-medium truncate pr-2">${h.desc}</span>
+            <span class="font-bold flex-shrink-0 ${h.esIngreso ? 'text-blue-600' : 'text-red-500'}">${h.esIngreso ? '+' : '-'}${format(h.monto)}</span>
+        </li>`).join('') : '<li class="text-gray-400 text-sm italic">Sin movimientos</li>';
 
-    // Vehículos (Cálculo inteligente)
-    document.getElementById('vehiculo-total-costo').innerText = format(estadoActual.vehiculo.costoTotal);
+    // Vehículos (Eficiencia de siempre)
+    document.getElementById('vehiculo-total-costo').innerText = format(estadoActual.vehiculo.costoTotalHistorico);
     let kmRecorridos = 0;
     if(estadoActual.vehiculo.odoMax !== null && estadoActual.vehiculo.odoMin !== null) {
         kmRecorridos = estadoActual.vehiculo.odoMax - estadoActual.vehiculo.odoMin;
     }
-    const efi = kmRecorridos > 0 ? (estadoActual.vehiculo.costoTotal / kmRecorridos).toFixed(2) : '0.00';
-    document.getElementById('vehiculo-eficiencia').innerText = `${efi} R$/km`;
+    const efi = kmRecorridos > 0 ? (estadoActual.vehiculo.costoTotalHistorico / kmRecorridos).toFixed(2) : '0.00';
+    document.getElementById('vehiculo-eficiencia').innerText = `${efi}`;
 
-    // Gastos por Categoría
+    // Gastos por Categoría (Solo del Mes)
     const catHtml = document.getElementById('lista-desglose-gastos');
-    catHtml.innerHTML = Object.entries(estadoActual.gastosPorCategoria).map(([cat, m]) => `
-        <li class="p-3 flex justify-between hover:bg-gray-50 text-sm">
-            <span class="text-gray-700 font-medium">${cat}</span>
-            <span class="font-bold text-gray-900">${format(m)}</span>
-        </li>`).join('');
+    const desgloseItems = Object.entries(estadoActual.gastosPorCategoriaMes);
+    
+    if (desgloseItems.length === 0) {
+        catHtml.innerHTML = '<li class="text-gray-400 text-sm italic p-2">Aún no hay gastos registrados este mes.</li>';
+    } else {
+        catHtml.innerHTML = desgloseItems.map(([cat, m]) => `
+            <li class="p-3 flex justify-between items-center hover:bg-gray-50 text-sm">
+                <span class="text-gray-700 font-medium truncate pr-2">${cat}</span>
+                <span class="font-bold text-gray-900 flex-shrink-0">${format(m)}</span>
+            </li>`).join('');
+    }
 }
 
 // ==========================================
@@ -244,12 +258,11 @@ window.pedirConsejoIA = async () => {
     btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Buscando sabiduría...';
     btn.disabled = true;
 
-    const resumen = `Saldo Total: R$ ${estadoActual.saldo}. Ingresos Familiares (Sueldos y Negocios): R$ ${estadoActual.ingresosNetos}. Gastos Totales: R$ ${estadoActual.gastosTotales}. Primicias: R$ ${estadoActual.primiciasDadas}.`;
+    const resumen = `Mes de análisis: ${mesActualTxt}. Saldo Total Histórico: R$ ${estadoActual.saldoHistorico}. Ingresos en este mes: R$ ${estadoActual.ingresosMes}. Gastos en este mes: R$ ${estadoActual.gastosMes}. Primicias dadas en este mes: R$ ${estadoActual.primiciasMes}.`;
     
-    // Instrucción estricta bajo tus requerimientos bíblicos
     const promptTexto = `Eres un sabio consejero financiero cristiano pastoral. Tus respuestas deben tener un enfoque estrictamente bíblico. Todo debe pasar por el filtro de la palabra de Dios, reconociendo que Jesús es el camino, la verdad y la vida. 
     Este es el estado de la familia Ripoll: ${resumen}. 
-    Analiza estos números en un texto breve (máximo 2 párrafos). Da una palabra de aliento basada en las Escrituras (usa la cita exacta). Menciona su fidelidad en primicias. Da un consejo práctico. Usa formato HTML simple <b>, <i>, <br>.`;
+    Analiza la mayordomía del MES ACTUAL en un texto breve (máximo 2 párrafos). Da una palabra de aliento basada en las Escrituras (usa la cita exacta). Menciona su fidelidad en primicias. Da un consejo práctico sobre el balance del mes. Usa formato HTML simple <b>, <i>, <br>.`;
 
     try {
         const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${key}`, {
@@ -261,7 +274,7 @@ window.pedirConsejoIA = async () => {
         
         chat.innerHTML += `
         <div class="flex items-start mt-4">
-            <div class="bg-white border border-gray-100 text-gray-800 rounded-2xl rounded-tl-none p-5 max-w-[95%] text-sm shadow-sm leading-relaxed">
+            <div class="bg-white border border-gray-100 text-gray-800 rounded-2xl rounded-tl-none p-4 md:p-5 max-w-[95%] text-sm shadow-sm leading-relaxed">
                 ${respuesta}
             </div>
         </div>`;
@@ -269,7 +282,7 @@ window.pedirConsejoIA = async () => {
     } catch (e) {
         window.showToast("Error al conectar con el Consejero.", "error");
     }
-    btn.innerHTML = '<i class="fas fa-lightbulb mr-2"></i> Evaluar Finanzas Actuales';
+    btn.innerHTML = '<i class="fas fa-lightbulb mr-2"></i> Evaluar Finanzas del Mes';
     btn.disabled = false;
 };
 
@@ -277,7 +290,7 @@ window.pedirConsejoIA = async () => {
 document.addEventListener("DOMContentLoaded", () => {
     const verses = [
         "«Los planes del diligente ciertamente tienden a la abundancia...» - Proverbios 21:5",
-        "«Honra a Jehová con tus bienes, y con las primicias de todos tus frutos...» - Proverbios 3:9",
+        "«Todo tiene su tiempo, y todo lo que se quiere debajo del cielo tiene su hora» - Eclesiastés 3:1",
         "«Porque ¿quién de vosotros, queriendo edificar una torre, no se sienta primero y calcula los gastos...?» - Lucas 14:28"
     ];
     document.getElementById('versiculo-diario-texto').innerText = verses[Math.floor(Math.random() * verses.length)];
