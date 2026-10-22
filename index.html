@@ -5,8 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Contabilidad Bendecida</title>
     
+    <!-- Ícono de la pestaña del navegador -->
+    <link rel="icon" type="image/png" href="icono-192.png">
+    
     <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#0f172a"> <!-- Azul profundo -->
+    <meta name="theme-color" content="#0f172a">
     
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.tailwindcss.com"></script>
@@ -35,7 +38,10 @@
     <!-- Pantalla de Login -->
     <div id="login-screen" class="fixed inset-0 bg-blue-900 z-50 flex items-center justify-center transition-opacity duration-500">
         <div class="bg-white p-8 rounded-3xl shadow-2xl max-w-md w-full mx-4 text-center border-t-4 border-gold-500">
-            <i class="fas fa-dove text-5xl text-gold-500 mb-4"></i>
+            
+            <!-- Tu Logo Oficial en el Login -->
+            <img src="icono-192.png" alt="Logo Bendecida" class="w-28 h-28 mx-auto mb-4 rounded-full border-2 border-gold-500 shadow-md object-cover bg-white p-1">
+            
             <h1 class="text-3xl font-serif font-semibold text-blue-950 mb-2">Contabilidad Bendecida</h1>
             <p class="text-gray-500 mb-8 text-sm">"El prudente ve el peligro y lo evita..." - Proverbios 22:3</p>
             
@@ -64,8 +70,9 @@
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="flex justify-between items-center h-16">
                     <div class="flex items-center">
-                        <i class="fas fa-leaf text-gold-400 mr-3 text-xl"></i>
-                        <span class="font-serif text-xl font-semibold tracking-wide">Contabilidad Bendecida</span>
+                        <!-- Tu Logo Oficial en el Menú Superior -->
+                        <img src="icono-192.png" alt="Logo" class="w-10 h-10 mr-3 rounded-full border-2 border-gold-400 bg-white object-cover">
+                        <span class="font-serif text-xl font-semibold tracking-wide">Familia Ripoll</span>
                     </div>
                     <button onclick="window.cerrarSesion()" class="text-sm bg-blue-900 px-3 py-1.5 rounded-lg border border-blue-800 hover:bg-blue-800 transition">
                         <i class="fas fa-sign-out-alt"></i> Salir
@@ -178,7 +185,6 @@
                                 <input type="text" id="gasto-desc" class="p-3 border border-gray-200 bg-gray-50 rounded-xl w-full md:col-span-2" placeholder="Descripción (Ej. Panadería, Luz)">
                                 <select id="gasto-categoria" class="p-3 border border-gray-200 bg-gray-50 rounded-xl w-full">
                                     <option value="Primicias">🎁 Primicias / Ofrendas</option>
-                                    <!-- Las categorías dinámicas se inyectarán aquí -->
                                 </select>
                                 <input type="number" id="gasto-monto" class="p-3 border border-gray-200 bg-gray-50 rounded-xl w-full" placeholder="Monto (R$)">
                                 <button onclick="guardarGastoFamiliar()" class="md:col-span-2 bg-blue-900 hover:bg-blue-950 text-white font-bold py-3 rounded-xl shadow-md transition mt-2">Registrar Gasto</button>
@@ -201,7 +207,6 @@
                                 <button onclick="window.agregarCategoria()" class="bg-blue-600 text-white px-4 rounded-xl shadow hover:bg-blue-700 transition"><i class="fas fa-plus"></i></button>
                             </div>
                             <ul id="lista-categorias-admin" class="space-y-2 max-h-60 overflow-y-auto pr-2">
-                                <!-- Lista administrable -->
                             </ul>
                         </div>
                     </div>
@@ -284,7 +289,6 @@
             document.querySelectorAll('.section-content').forEach(el => el.classList.add('hidden'));
             document.getElementById(`sec-${sectionId}`).classList.remove('hidden');
             
-            // Efecto activo en botones de PC
             document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('bg-blue-900', 'text-white'));
             const activeBtn = document.getElementById(`nav-${sectionId}`);
             if(activeBtn) activeBtn.classList.add('bg-blue-900', 'text-white');
