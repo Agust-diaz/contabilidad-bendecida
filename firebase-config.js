@@ -1,26 +1,26 @@
-// Importamos las herramientas necesarias directamente desde los servidores de Google
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-import { getFirestore } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
-import { getAuth } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+// Importamos las herramientas en la versión 13.1.0
+import { initializeApp } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-app.js";
+import { getFirestore } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-firestore.js";
+import { getAuth } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-auth.js";
+// (Omitimos Analytics por ahora para mantener la app ligera y enfocada)
 
-// ==========================================================================
-// TUS LLAVES DE ACCESO A LA BASE DE DATOS (Reemplaza con tus datos reales)
-// ==========================================================================
+// La configuración exacta de Contabilidad Bendecida
 const firebaseConfig = {
-  apiKey: "TU_API_KEY_AQUI",
-  authDomain: "tu-proyecto.firebaseapp.com",
-  projectId: "tu-proyecto",
-  storageBucket: "tu-proyecto.appspot.com",
-  messagingSenderId: "TU_MESSAGING_SENDER_ID",
-  appId: "TU_APP_ID"
+    apiKey: "AIzaSyClB75guA8wMMrlHOJipq-7VwPVo99-Yis",
+    authDomain: "contabilidad-bendecida.firebaseapp.com",
+    projectId: "contabilidad-bendecida",
+    storageBucket: "contabilidad-bendecida.firebasestorage.app",
+    messagingSenderId: "284334437609",
+    appId: "1:284334437609:web:8487b537f1984e8505ec78",
+    measurementId: "G-SLX34RSNSR"
 };
 
-// Inicializamos Firebase
+// Inicializamos la aplicación
 const app = initializeApp(firebaseConfig);
 
-// Inicializamos la Base de Datos (Firestore) y la Autenticación (Auth)
+// Inicializamos la Base de Datos y la Seguridad
 const db = getFirestore(app);
 const auth = getAuth(app);
 
-// Exportamos 'db' y 'auth' para que app.js pueda usarlos para guardar los gastos
+// Exportamos 'db' y 'auth' para que tu app.js tenga acceso a la llave
 export { db, auth };

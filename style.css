@@ -62,3 +62,15 @@ button {
 button:hover { background: #144016; }
 button.btn-dorado { background: var(--dorado); color: #fff; }
 button.btn-dorado:hover { background: #b8962e; }
+/* Estilos para el Login */
+.login-container {
+    display: flex; justify-content: center; align-items: center; min-height: 100vh;
+    background: linear-gradient(135deg, var(--verde-principal), #144016);
+    padding: 20px;
+}
+.tarjeta-login {
+    background: var(--blanco); padding: 40px 30px; border-radius: 16px;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.4); width: 100%; max-width: 400px;
+    text-align: center; border-top: 5px solid var(--dorado);
+}
+.tarjeta-login h2 { color: var(--verde-principal); margin-bottom: 5px; font-size: 1.6rem; }
