@@ -270,7 +270,7 @@ window.pedirConsejoIA = async () => {
     Analiza la mayordomía del MES ACTUAL en un texto breve (máximo 2 párrafos). Da una palabra de aliento basada en las Escrituras (usa la cita exacta). Menciona su fidelidad en primicias. Da un consejo práctico sobre el balance del mes. Usa formato HTML simple <b>, <i>, <br>.`;
 
     try {
-        const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${key}`, {
+        const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${key}`, {
             method: 'POST', headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ contents: [{ parts: [{ text: promptTexto }] }] })
         });
