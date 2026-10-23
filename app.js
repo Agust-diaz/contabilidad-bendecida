@@ -243,13 +243,13 @@ function actualizarInterfaz() {
 }
 
 // ==========================================
-// CONSEJERO BÍBLICO (IA GEMINI)
+// CONSEJERO BÍBLICO (IA GEMINI) - RAYOS X
 // ==========================================
 window.pedirConsejoIA = async () => {
     let key = localStorage.getItem('gemini_key');
     
     if(!key) {
-        let claveIngresada = prompt("Ingresa tu clave de Gemini:");
+        let claveIngresada = prompt("Ingresa tu clave de Gemini (Debe empezar con AIza...):");
         if(claveIngresada) {
             key = claveIngresada.trim(); 
             localStorage.setItem('gemini_key', key);
@@ -275,11 +275,17 @@ window.pedirConsejoIA = async () => {
             body: JSON.stringify({ contents: [{ parts: [{ text: promptTexto }] }] })
         });
         
+        const data = await res.json();
+
+        // Si Google devuelve un error, lo atrapamos con su mensaje original
         if (!res.ok) {
-            throw new Error("Clave rechazada por Google");
+            throw new Error(data.error ? data.error.message : "Error desconocido en los servidores de Google.");
         }
 
-        const data = await res.json();
+        if (!data.candidates || data.candidates.length === 0) {
+            throw new Error("Google procesó la solicitud pero no envió respuesta. Intenta de nuevo.");
+        }
+
         const respuesta = data.candidates[0].content.parts[0].text;
         
         chat.innerHTML += `
@@ -289,21 +295,28 @@ window.pedirConsejoIA = async () => {
             </div>
         </div>`;
         chat.scrollTop = chat.scrollHeight;
+        
     } catch (e) {
-        localStorage.removeItem('gemini_key');
-        window.showToast("Error con la Clave. Se borró para que intentes de nuevo.", "error");
+        // AQUÍ ESTÁN LOS RAYOS X: Mostrará el error exacto en el chat
+        chat.innerHTML += `
+        <div class="flex items-start mt-4">
+            <div class="bg-red-50 border border-red-200 text-red-800 rounded-2xl p-4 text-sm shadow-sm max-w-[95%]">
+                <b class="block mb-1"><i class="fas fa-exclamation-triangle"></i> Error de conexión:</b> 
+                ${e.message}
+            </div>
+        </div>`;
+        chat.scrollTop = chat.scrollHeight;
+        
+        // Solo borramos la llave si el error menciona explícitamente que es inválida
+        const mensajeError = e.message.toLowerCase();
+        if (mensajeError.includes("key") || mensajeError.includes("valid") || mensajeError.includes("api")) {
+            localStorage.removeItem('gemini_key');
+            window.showToast("La clave no fue aceptada. Cópiala bien e intenta de nuevo.", "error");
+        } else {
+            window.showToast("Ocurrió un error. Revisa el mensaje en pantalla.", "error");
+        }
     }
     
     btn.innerHTML = '<i class="fas fa-lightbulb mr-2"></i> Evaluar Finanzas del Mes';
     btn.disabled = false;
 };
-
-// Inicialización de Versículo Diario
-document.addEventListener("DOMContentLoaded", () => {
-    const verses = [
-        "«Los planes del diligente ciertamente tienden a la abundancia...» - Proverbios 21:5",
-        "«Todo tiene su tiempo, y todo lo que se quiere debajo del cielo tiene su hora» - Eclesiastés 3:1",
-        "«Porque ¿quién de vosotros, queriendo edificar una torre, no se sienta primero y calcula los gastos...?» - Lucas 14:28"
-    ];
-    document.getElementById('versiculo-diario-texto').innerText = verses[Math.floor(Math.random() * verses.length)];
-});
