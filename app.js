@@ -26,17 +26,26 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 // ==========================================
-// SEGURIDAD Y SESIÓN
+// SEGURIDAD Y SESIÓN (A prueba de celulares)
 // ==========================================
 window.iniciarSesion = async () => {
-    const email = document.getElementById('email-login').value;
-    const pass = document.getElementById('password-login').value;
     const msj = document.getElementById('login-error');
+    
+    // .trim() quita espacios al inicio/final y .toLowerCase() pasa todo a minúsculas
+    const email = document.getElementById('email-login').value.trim().toLowerCase();
+    const pass = document.getElementById('password-login').value;
+    
+    if(!email || !pass) {
+        msj.innerText = "Por favor, completa los datos.";
+        msj.classList.remove('hidden');
+        return;
+    }
+
     try {
         await signInWithEmailAndPassword(auth, email, pass);
         msj.classList.add('hidden');
     } catch (error) {
-        msj.innerText = "Credenciales incorrectas.";
+        msj.innerText = "Credenciales incorrectas. Verifica tu correo y clave.";
         msj.classList.remove('hidden');
     }
 };
