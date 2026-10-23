@@ -16,22 +16,28 @@ let estadoActual = {
     categoriasList: []
 };
 
-// Establecer nombre del mes actual en la interfaz
+// ==========================================
+// INICIALIZACIÓN VISUAL (Versículo y Mes)
+// ==========================================
 const meses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
 const fechaActual = new Date();
 const mesActualTxt = meses[fechaActual.getMonth()];
-document.addEventListener("DOMContentLoaded", () => {
-    const labelMes = document.getElementById('mes-actual-label');
-    if(labelMes) labelMes.innerText = `Mes de ${mesActualTxt}`;
-});
+const labelMes = document.getElementById('mes-actual-label');
+if(labelMes) labelMes.innerText = `Mes de ${mesActualTxt}`;
+
+const verses = [
+    "«Los planes del diligente ciertamente tienden a la abundancia...» - Proverbios 21:5",
+    "«Todo tiene su tiempo, y todo lo que se quiere debajo del cielo tiene su hora» - Eclesiastés 3:1",
+    "«Porque ¿quién de vosotros, queriendo edificar una torre, no se sienta primero y calcula los gastos...?» - Lucas 14:28"
+];
+const versiculoTag = document.getElementById('versiculo-diario-texto');
+if(versiculoTag) versiculoTag.innerText = verses[Math.floor(Math.random() * verses.length)];
 
 // ==========================================
 // SEGURIDAD Y SESIÓN (A prueba de celulares)
 // ==========================================
 window.iniciarSesion = async () => {
     const msj = document.getElementById('login-error');
-    
-    // .trim() quita espacios al inicio/final y .toLowerCase() pasa todo a minúsculas
     const email = document.getElementById('email-login').value.trim().toLowerCase();
     const pass = document.getElementById('password-login').value;
     
@@ -249,7 +255,7 @@ window.pedirConsejoIA = async () => {
     let key = localStorage.getItem('gemini_key');
     
     if(!key) {
-        let claveIngresada = prompt("Ingresa tu clave de Gemini (Debe empezar con AIza...):");
+        let claveIngresada = prompt("Ingresa tu clave de Gemini:");
         if(claveIngresada) {
             key = claveIngresada.trim(); 
             localStorage.setItem('gemini_key', key);
@@ -270,14 +276,14 @@ window.pedirConsejoIA = async () => {
     Analiza la mayordomía del MES ACTUAL en un texto breve (máximo 2 párrafos). Da una palabra de aliento basada en las Escrituras (usa la cita exacta). Menciona su fidelidad en primicias. Da un consejo práctico sobre el balance del mes. Usa formato HTML simple <b>, <i>, <br>.`;
 
     try {
-        const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${key}`, {
+        // Se actualizó el modelo a gemini-1.5-flash-latest
+        const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${key}`, {
             method: 'POST', headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ contents: [{ parts: [{ text: promptTexto }] }] })
         });
         
         const data = await res.json();
 
-        // Si Google devuelve un error, lo atrapamos con su mensaje original
         if (!res.ok) {
             throw new Error(data.error ? data.error.message : "Error desconocido en los servidores de Google.");
         }
@@ -297,7 +303,6 @@ window.pedirConsejoIA = async () => {
         chat.scrollTop = chat.scrollHeight;
         
     } catch (e) {
-        // AQUÍ ESTÁN LOS RAYOS X: Mostrará el error exacto en el chat
         chat.innerHTML += `
         <div class="flex items-start mt-4">
             <div class="bg-red-50 border border-red-200 text-red-800 rounded-2xl p-4 text-sm shadow-sm max-w-[95%]">
@@ -307,13 +312,10 @@ window.pedirConsejoIA = async () => {
         </div>`;
         chat.scrollTop = chat.scrollHeight;
         
-        // Solo borramos la llave si el error menciona explícitamente que es inválida
         const mensajeError = e.message.toLowerCase();
-        if (mensajeError.includes("key") || mensajeError.includes("valid") || mensajeError.includes("api")) {
+        if (mensajeError.includes("key") || mensajeError.includes("valid") || mensajeError.includes("api") || mensajeError.includes("found")) {
             localStorage.removeItem('gemini_key');
-            window.showToast("La clave no fue aceptada. Cópiala bien e intenta de nuevo.", "error");
-        } else {
-            window.showToast("Ocurrió un error. Revisa el mensaje en pantalla.", "error");
+            window.showToast("Hubo un problema con la clave. Intenta ingresarla nuevamente.", "error");
         }
     }
     
